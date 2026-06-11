@@ -1,69 +1,337 @@
 # 📝 Tododl – Mach deine To-Dos zum Dudeln! 🎶✨
 
+> Die Open-Source-To-Do-App, die Chaos in Struktur verwandelt – lokal, intelligent und datenschutzfreundlich.
+
+---
 <p align="center">
   <img src="https://img.shields.io/badge/License-GPL_3.0-yellow.svg" alt="License MIT">
   <img src="https://img.shields.io/badge/Platform-iOS%20%7C%20macOS%20%7C%20Android%20%7C%20Web-blue" alt="Platforms">
   <img src="https://img.shields.io/badge/Status-Concept%20%26%20Open%20Source-brightgreen" alt="Status">
 </p>
 
----
 
-## 🌟 Über Tododl
+## 🌟 Vision
 
-Willkommen bei **Tododl**, der ersten Produktivitäts-App, die dir nicht das Gefühl gibt, eine endlose To-Do-Liste abzuarbeiten, sondern eine kreative Melodie für deinen Tag zu summen! 
+Die meisten Aufgaben landen heute überall:
 
-Vergiss starre Tabellen und stressige Deadlines. Tododl ist dein digitaler Spielplatz für Gedanken, Termine, Team-Projekte und all die kleinen Geistesblitze, die sonst im Alltag untergehen.
+* Apple Erinnerungen
+* Apple Notizen
+* PDFs
+* Screenshots
+* E-Mails
+* Messenger
+* Sprachmemos
+* Einkaufslisten
+* Kalender
 
-> 💡 **Die Philosophie:** Leicht, locker, lebendig. Warum sollte Produktivität langweilig und grau sein? Tododl nimmt den Ernst aus der Sache und bringt Farbe in deinen Workflow.
+Tododl soll diese Informationen an einem Ort zusammenführen und mithilfe lokaler KI automatisch strukturieren.
 
----
+**Unsere Philosophie:**
 
-## ✨ Die Core-Features im Überblick
+> AI soll nicht für dich denken.
+>
+> AI soll Chaos in Struktur verwandeln.
 
-| Feature | Was es macht | Das "Dudel"-Gefühl 🎈 |
-| :--- | :--- | :--- |
-| **🎨 Kritzel-Notizen** | Freies Festhalten von Gedanken wie auf Papier. | Gedanken fließen selten in geraden Linien – hier dürfen sie tanzen. |
-| **🔒 Privat-Ecke** | Ein absolut geschützter Raum nur für dich. | Synchronisiert via iCloud, komplett unsichtbar fürs Team. |
-| **👥 Team-Workspaces** | Bunte, kollaborative Boards für Projekte. | Mit einem einzigen Wisch wechselst du den Kontext. |
-| **📊 Befriedigendes Erledigen** | Visuelles und haptisches Feedback beim Abhaken. | Aufgaben werden mit einer verspielten Linie durchgestrichen. |
-
----
-
-## 🚀 Die Magie im Alltag (Unsere Lieblingsideen)
-
-<details>
-<summary>🏝️ <b>Die Dynamic Island lebt!</b> (Anklicken zum Ausklappen)</summary>
-<br>
-Startest du eine Aufgabe, setzt sich ein kleiner, fleißiger Timer auf deinen Bildschirm. Er motiviert dich beim Fokussieren und feiert mit dir auf dem Sperrbildschirm, wenn du fertig bist.
-</details>
-
-<details>
-<summary>⌚ <b>Die Zauber-Uhr am Handgelenk</b></summary>
-<br>
-Schnell im Vorbeigehen einen Gedanken einsprechen? Ein Tippen auf deiner Uhr genügt. Tododl fängt dein Gemurmel ein und macht daraus magisch eine sortierte Aufgabe für später.
-</details>
-
-<details>
-<summary>☕ <b>Das Meeting-Wunder</b></summary>
-<br>
-Meetings sind oft trocken. Tododl verwandelt Kaffeepausen-Gespräche und offizielle Sitzungen automatisch in ein schönes Protokoll. Die App filtert die echten Aufgaben heraus.
-</details>
-
-<details>
-<summary>📂 <b>Deine Dateien, liebevoll verknüpft</b></summary>
-<br>
-Egal, wo deine Dokumente liegen (wie auf Google Drive) – in Tododl steckst du sie einfach wie eine Postkarte direkt an deine Notizen oder Aufgaben. Kein Suchen mehr.
-</details>
+Dabei stehen Datenschutz und lokale Verarbeitung an erster Stelle.
 
 ---
 
-## 🤝 Open Source: Ein Spielplatz für alle!
+# 🚀 Kernfunktionen
 
-Tododl ist **Open Source**, weil die besten Ideen entstehen, wenn man sie teilt. Wir glauben daran, dass eine To-Do-App genau so funktionieren sollte, wie *du* es dir wünschst. 
+## ✅ Aufgabenverwaltung
 
-```kv
-[ Deine Idee ] ──+
-                 │
-                 ├──► [ Gemeinsam Code zaubern ] ──► ✨ Tododl wird besser!
-                 │
-[ Dein Design ] ─+
+* Aufgaben erstellen
+* Prioritäten
+* Erinnerungen
+* Wiederkehrende Aufgaben
+* Projekte
+* Tags
+* Smart Lists
+
+## 🎨 Notizen & Gedanken
+
+* Schnelle Notizen
+* Freiform-Notizen
+* Kritzel-Modus
+* Anhänge
+* Verknüpfte Aufgaben
+
+## 👥 Team Workspaces
+
+* Gemeinsame Projekte
+* Aufgaben zuweisen
+* Kommentare
+* Aktivitätsverlauf
+
+## 🔒 Privacy First
+
+* Lokale Speicherung
+* Ende-zu-Ende Synchronisation (geplant)
+* Keine verpflichtende Cloud
+* Lokale KI-Auswertung
+
+---
+
+# 🧠 AI Features
+
+## Universal Inbox
+
+Wirf alles hinein:
+
+* PDF
+* Screenshot
+* Bild
+* Text
+* Audio
+* Link
+
+Tododl erkennt automatisch:
+
+* Aufgaben
+* Termine
+* Projekte
+* Erinnerungen
+
+---
+
+## PDF → Aufgaben
+
+Beispiel:
+
+```text
+HTL Projektplan.pdf
+```
+
+↓
+
+```text
+☐ Schaltplan erstellen
+☐ Platine bestellen
+☐ Dokumentation schreiben
+☐ Präsentation vorbereiten
+```
+
+---
+
+## Screenshot → Aufgaben
+
+Screenshot aus:
+
+* WhatsApp
+* Discord
+* Teams
+* E-Mail
+
+↓
+
+Automatische Aufgabenerkennung.
+
+---
+
+## Sprachaufnahme → Aufgaben
+
+Beispiel:
+
+> "Morgen Sensor testen und danach Bericht schreiben"
+
+↓
+
+```text
+☐ Sensor testen
+☐ Bericht schreiben
+```
+
+---
+
+## Meeting Assistant
+
+Audioaufnahme analysieren.
+
+Erkennt:
+
+* Entscheidungen
+* Aufgaben
+* Verantwortliche Personen
+* Deadlines
+
+---
+
+## Smart Priorities
+
+Lokale KI schlägt vor:
+
+* Was heute wichtig ist
+* Welche Aufgaben überfällig werden
+* Welche Projekte Aufmerksamkeit benötigen
+
+---
+
+## Smart Project Detection
+
+Erkennt automatisch Zusammenhänge zwischen:
+
+* Aufgaben
+* Notizen
+* Dateien
+* Terminen
+
+---
+
+# 🍎 Apple-First
+
+Tododl wird speziell für Apple-Plattformen entwickelt.
+
+Geplante Technologien:
+
+* SwiftUI
+* SwiftData
+* CloudKit
+* Apple Intelligence
+* Foundation Models
+* CoreML
+* Vision Framework
+* Speech Framework
+* Neural Engine
+
+---
+
+# 🔗 Integrationen
+
+## Geplant
+
+* Apple Erinnerungen
+* Apple Notizen
+* Kalender
+* Dateien App
+* iCloud Drive
+* Google Drive
+* OneDrive
+* Dropbox
+
+---
+
+# 💡 Ideen für die Zukunft
+
+* Dynamic Island Fokus-Timer
+* Apple Watch Companion
+* Siri Integration
+* Share Sheet Support
+* Spotlight Suche
+* Offline AI Assistant
+* Wissensgraph für Projekte
+* AI Inbox Cleanup
+* OCR für handschriftliche Notizen
+* Projektzusammenfassungen
+* AI Lernassistent für Schule & Studium
+
+---
+
+# 🛣️ Roadmap
+
+## Phase 0 – Konzept
+
+* [x] Projektidee definiert
+* [x] Name festgelegt
+* [x] GitHub Repository erstellen
+* [x] Vision dokumentiert
+* [x] README erstellt
+
+---
+
+## Phase 1 – Grundgerüst
+
+* [ ] Lizenz festlegen
+* [ ] SwiftUI App anlegen
+* [ ] SwiftData einrichten
+* [ ] Basis Navigation
+* [ ] Aufgabenmodell definieren
+* [ ] Lokale Speicherung
+
+---
+
+## Phase 2 – To-Do System
+
+* [ ] Aufgaben erstellen
+* [ ] Aufgaben bearbeiten
+* [ ] Aufgaben löschen
+* [ ] Prioritäten
+* [ ] Erinnerungen
+* [ ] Projekte
+* [ ] Tags
+
+---
+
+## Phase 3 – Notizen
+
+* [ ] Schnellnotizen
+* [ ] Markdown Support
+* [ ] Dateianhänge
+* [ ] Zeichnungen
+* [ ] Verknüpfung mit Aufgaben
+
+---
+
+## Phase 4 – KI Grundlagen
+
+* [ ] PDF Analyse
+* [ ] OCR Integration
+* [ ] Bildanalyse
+* [ ] Audio Transkription
+* [ ] Universal Inbox
+
+---
+
+## Phase 5 – Apple Intelligence
+
+* [ ] Foundation Models
+* [ ] Lokale Zusammenfassungen
+* [ ] Aufgabenerkennung
+* [ ] Smart Priorities
+* [ ] Projektzusammenfassungen
+
+---
+
+## Phase 6 – Integrationen
+
+* [ ] Apple Erinnerungen
+* [ ] Apple Notizen
+* [ ] Kalender
+* [ ] Dateien App
+* [ ] Share Sheet
+
+---
+
+## Phase 7 – Zusammenarbeit
+
+* [ ] Team Workspaces
+* [ ] Freigaben
+* [ ] Kommentare
+* [ ] Cloud Synchronisation
+
+---
+
+# 🤝 Mitmachen
+
+Beiträge sind willkommen.
+
+Gesucht werden:
+
+* Swift Entwickler
+* UI/UX Designer
+* Tester
+* Dokumentationsautoren
+* Ideenlieferanten
+
+---
+
+# 📜 Lizenz
+
+Dieses Projekt wird unter der AGPLv3 veröffentlicht.
+
+Weitere Informationen befinden sich in der Datei `LICENSE`.
+
+---
+
+> Produktivität muss nicht langweilig sein.
+>
+> Tododl soll der Ort werden, an dem Gedanken, Aufgaben und Projekte zusammenfinden – unterstützt durch lokale KI, ohne die Kontrolle über deine Daten zu verlieren.

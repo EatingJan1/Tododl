@@ -1,7 +1,7 @@
 # 📝 Tododl – Mach deine To-Dos zum Dudeln! 🎶✨
 
 <p align="center">
-  <img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License MIT">
+  <img src="https://img.shields.io/badge/License-GPL_3.0-yellow.svg" alt="License MIT">
   <img src="https://img.shields.io/badge/Platform-iOS%20%7C%20macOS%20%7C%20Android%20%7C%20Web-blue" alt="Platforms">
   <img src="https://img.shields.io/badge/Status-Concept%20%26%20Open%20Source-brightgreen" alt="Status">
 </p>

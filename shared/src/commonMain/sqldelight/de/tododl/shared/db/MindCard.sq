@@ -1,0 +1,26 @@
+CREATE TABLE mindCard (
+    id TEXT NOT NULL PRIMARY KEY,
+    panelId TEXT NOT NULL, -- verweist auf node.id vom Typ PANEL_MINDBOARD
+    text TEXT NOT NULL,
+    colorHex TEXT,
+    posX REAL NOT NULL DEFAULT 0,
+    posY REAL NOT NULL DEFAULT 0,
+    createdAt INTEGER NOT NULL,
+    updatedAt INTEGER NOT NULL,
+    FOREIGN KEY (panelId) REFERENCES node(id) ON DELETE CASCADE
+);
+
+CREATE INDEX mindCard_panel_idx ON mindCard(panelId);
+
+selectMindCardsByPanel:
+SELECT * FROM mindCard WHERE panelId = ?;
+
+insertMindCard:
+INSERT OR REPLACE INTO mindCard(id, panelId, text, colorHex, posX, posY, createdAt, updatedAt)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?);
+
+updateMindCardPosition:
+UPDATE mindCard SET posX = ?, posY = ?, updatedAt = ? WHERE id = ?;
+
+deleteMindCard:
+DELETE FROM mindCard WHERE id = ?;

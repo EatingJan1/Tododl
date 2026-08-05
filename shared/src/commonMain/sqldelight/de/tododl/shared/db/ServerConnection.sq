@@ -1,0 +1,25 @@
+-- Jede Zeile ist eine gespeicherte Verbindung zu genau einem Projektserver
+-- (z. B. "Firma", "Privat", "Verein" - jeweils eigene baseUrl + eigener Login).
+CREATE TABLE serverConnection (
+    id TEXT NOT NULL PRIMARY KEY,
+    name TEXT NOT NULL,
+    baseUrl TEXT NOT NULL,
+    accessToken TEXT NOT NULL,
+    userId TEXT NOT NULL,
+    userEmail TEXT NOT NULL,
+    userName TEXT NOT NULL,
+    createdAt INTEGER NOT NULL
+);
+
+selectAllServerConnections:
+SELECT * FROM serverConnection ORDER BY name ASC;
+
+selectServerConnectionById:
+SELECT * FROM serverConnection WHERE id = ?;
+
+insertServerConnection:
+INSERT OR REPLACE INTO serverConnection(id, name, baseUrl, accessToken, userId, userEmail, userName, createdAt)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?);
+
+deleteServerConnection:
+DELETE FROM serverConnection WHERE id = ?;

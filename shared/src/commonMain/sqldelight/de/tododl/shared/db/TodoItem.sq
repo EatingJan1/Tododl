@@ -1,0 +1,26 @@
+CREATE TABLE todoItem (
+    id TEXT NOT NULL PRIMARY KEY,
+    panelId TEXT NOT NULL, -- verweist auf node.id vom Typ PANEL_TODOLIST
+    text TEXT NOT NULL,
+    done INTEGER NOT NULL DEFAULT 0,
+    dueDate INTEGER,
+    position INTEGER NOT NULL DEFAULT 0,
+    createdAt INTEGER NOT NULL,
+    updatedAt INTEGER NOT NULL,
+    FOREIGN KEY (panelId) REFERENCES node(id) ON DELETE CASCADE
+);
+
+CREATE INDEX todoItem_panel_idx ON todoItem(panelId);
+
+selectTodoItemsByPanel:
+SELECT * FROM todoItem WHERE panelId = ? ORDER BY position ASC;
+
+insertTodoItem:
+INSERT OR REPLACE INTO todoItem(id, panelId, text, done, dueDate, position, createdAt, updatedAt)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?);
+
+setTodoItemDone:
+UPDATE todoItem SET done = ?, updatedAt = ? WHERE id = ?;
+
+deleteTodoItem:
+DELETE FROM todoItem WHERE id = ?;

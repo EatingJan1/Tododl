@@ -1,0 +1,25 @@
+CREATE TABLE bereich (
+    id TEXT NOT NULL PRIMARY KEY,
+    title TEXT NOT NULL,
+    icon TEXT,
+    colorHex TEXT,
+    position INTEGER NOT NULL DEFAULT 0,
+    createdAt INTEGER NOT NULL,
+    updatedAt INTEGER NOT NULL
+);
+
+selectAllBereiche:
+SELECT * FROM bereich ORDER BY position ASC;
+
+selectBereichById:
+SELECT * FROM bereich WHERE id = ?;
+
+insertBereich:
+INSERT OR REPLACE INTO bereich(id, title, icon, colorHex, position, createdAt, updatedAt)
+VALUES (?, ?, ?, ?, ?, ?, ?);
+
+deleteBereich:
+DELETE FROM bereich WHERE id = ?;
+
+updateBereichPosition:
+UPDATE bereich SET position = ?, updatedAt = ? WHERE id = ?;

@@ -1,0 +1,44 @@
+-- Ein Node ist entweder ein Ordner oder ein Panel (TodoList, Mindboard, ...).
+-- type-Diskriminator hält das Schema einfach und erweiterbar (neue Panel-Typen ohne Migration der Baumstruktur).
+CREATE TABLE node (
+    id TEXT NOT NULL PRIMARY KEY,
+    projectId TEXT NOT NULL,
+    parentId TEXT,
+    type TEXT NOT NULL, -- "ORDNER" | "PANEL_TODOLIST" | "PANEL_MINDBOARD"
+    title TEXT NOT NULL,
+    icon TEXT,
+    position INTEGER NOT NULL DEFAULT 0,
+    createdAt INTEGER NOT NULL,
+    updatedAt INTEGER NOT NULL,
+    FOREIGN KEY (projectId) REFERENCES projekt(id) ON DELETE CASCADE,
+    FOREIGN KEY (parentId) REFERENCES node(id) ON DELETE CASCADE
+);
+
+CREATE INDEX node_project_idx ON node(projectId);
+CREATE INDEX node_parent_idx ON node(parentId);
+
+selectNodesByProject:
+SELECT * FROM node WHERE projectId = ? ORDER BY position ASC;
+
+-- Root-Nodes eines Projekts (direkt unter dem Projekt, kein Ordner-Parent)
+selectRootNodes:
+SELECT * FROM node WHERE projectId = ? AND parentId IS NULL ORDER BY position ASC;
+
+selectChildNodes:
+SELECT * FROM node WHERE parentId = ? ORDER BY position ASC;
+
+selectNodeById:
+SELECT * FROM node WHERE id = ?;
+
+insertNode:
+INSERT OR REPLACE INTO node(id, projectId, parentId, type, title, icon, position, createdAt, updatedAt)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);
+
+deleteNode:
+DELETE FROM node WHERE id = ?;
+
+updateNodeTitle:
+UPDATE node SET title = ?, updatedAt = ? WHERE id = ?;
+
+moveNode:
+UPDATE node SET parentId = ?, position = ?, updatedAt = ? WHERE id = ?;

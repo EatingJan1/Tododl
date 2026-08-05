@@ -1,0 +1,37 @@
+CREATE TABLE projekt (
+    id TEXT NOT NULL PRIMARY KEY,
+    bereichId TEXT NOT NULL,
+    title TEXT NOT NULL,
+    description TEXT,
+    icon TEXT,
+    colorHex TEXT,
+    -- source: "LOCAL" oder "SERVER"; bei SERVER sind serverId und
+    -- serverConnectionId gesetzt (serverConnectionId verweist auf
+    -- serverConnection.id - welcher der mehreren gespeicherten Server das ist)
+    source TEXT NOT NULL DEFAULT 'LOCAL',
+    serverId TEXT,
+    serverConnectionId TEXT,
+    position INTEGER NOT NULL DEFAULT 0,
+    archived INTEGER NOT NULL DEFAULT 0,
+    createdAt INTEGER NOT NULL,
+    updatedAt INTEGER NOT NULL,
+    FOREIGN KEY (bereichId) REFERENCES bereich(id) ON DELETE CASCADE
+);
+
+CREATE INDEX projekt_bereich_idx ON projekt(bereichId);
+
+selectProjekteByBereich:
+SELECT * FROM projekt WHERE bereichId = ? AND archived = 0 ORDER BY position ASC;
+
+selectProjektById:
+SELECT * FROM projekt WHERE id = ?;
+
+insertProjekt:
+INSERT OR REPLACE INTO projekt(id, bereichId, title, description, icon, colorHex, source, serverId, serverConnectionId, position, archived, createdAt, updatedAt)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+
+deleteProjekt:
+DELETE FROM projekt WHERE id = ?;
+
+archiveProjekt:
+UPDATE projekt SET archived = 1, updatedAt = ? WHERE id = ?;

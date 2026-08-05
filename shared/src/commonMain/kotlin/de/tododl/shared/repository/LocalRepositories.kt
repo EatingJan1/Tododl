@@ -67,6 +67,12 @@ class LocalProjektRepository(
             .mapToList(ioDispatcher)
             .mapEach { it.toModel() }
 
+    override fun observeArchivedProjekte(bereichId: String): Flow<List<Projekt>> =
+        db.projektQueries.selectArchivedProjekteByBereich(bereichId)
+            .asFlow()
+            .mapToList(ioDispatcher)
+            .mapEach { it.toModel() }
+
     override suspend fun getProjekt(id: String): Projekt? = withContext(ioDispatcher) {
         db.projektQueries.selectProjektById(id).executeAsOneOrNull()?.toModel()
     }
@@ -91,6 +97,10 @@ class LocalProjektRepository(
 
     override suspend fun archive(id: String) = withContext(ioDispatcher) {
         db.projektQueries.archiveProjekt(now(), id)
+    }
+
+    override suspend fun unarchive(id: String) = withContext(ioDispatcher) {
+        db.projektQueries.unarchiveProjekt(now(), id)
     }
 
     override suspend fun delete(id: String) = withContext(ioDispatcher) {

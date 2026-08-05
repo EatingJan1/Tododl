@@ -4,7 +4,27 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d799be2f-19d5-41ea-b6af-bde109871ec2" name="Changes" comment="" />
+    <list default="true" id="d799be2f-19d5-41ea-b6af-bde109871ec2" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.gradle/8.9/executionHistory/executionHistory.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.9/executionHistory/executionHistory.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.9/executionHistory/executionHistory.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.9/executionHistory/executionHistory.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.9/fileHashes/fileHashes.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.9/fileHashes/fileHashes.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.9/fileHashes/fileHashes.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.9/fileHashes/fileHashes.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.9/fileHashes/resourceHashesCache.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.9/fileHashes/resourceHashesCache.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/desktopApp/src/desktopMain/kotlin/de/tododl/desktop/navigation/TododlApp.kt" beforeDir="false" afterPath="$PROJECT_DIR$/desktopApp/src/desktopMain/kotlin/de/tododl/desktop/navigation/TododlApp.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/desktopApp/src/desktopMain/kotlin/de/tododl/desktop/ui/BereichListeScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/desktopApp/src/desktopMain/kotlin/de/tododl/desktop/ui/BereichListeScreen.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/desktopApp/src/desktopMain/kotlin/de/tododl/desktop/ui/GruppenScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/desktopApp/src/desktopMain/kotlin/de/tododl/desktop/ui/GruppenScreen.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/desktopApp/src/desktopMain/kotlin/de/tododl/desktop/ui/MindboardPanelScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/desktopApp/src/desktopMain/kotlin/de/tododl/desktop/ui/MindboardPanelScreen.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/desktopApp/src/desktopMain/kotlin/de/tododl/desktop/ui/NodeBaumScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/desktopApp/src/desktopMain/kotlin/de/tododl/desktop/ui/NodeBaumScreen.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/desktopApp/src/desktopMain/kotlin/de/tododl/desktop/ui/ProjektListeScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/desktopApp/src/desktopMain/kotlin/de/tododl/desktop/ui/ProjektListeScreen.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/desktopApp/src/desktopMain/kotlin/de/tododl/desktop/ui/TodoListPanelScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/desktopApp/src/desktopMain/kotlin/de/tododl/desktop/ui/TodoListPanelScreen.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/desktopApp/src/desktopMain/kotlin/de/tododl/desktop/ui/theme/Theme.kt" beforeDir="false" afterPath="$PROJECT_DIR$/desktopApp/src/desktopMain/kotlin/de/tododl/desktop/ui/theme/Theme.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/shared/src/commonMain/kotlin/de/tododl/shared/repository/LocalRepositories.kt" beforeDir="false" afterPath="$PROJECT_DIR$/shared/src/commonMain/kotlin/de/tododl/shared/repository/LocalRepositories.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/shared/src/commonMain/kotlin/de/tododl/shared/repository/Repositories.kt" beforeDir="false" afterPath="$PROJECT_DIR$/shared/src/commonMain/kotlin/de/tododl/shared/repository/Repositories.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/shared/src/commonMain/sqldelight/de/tododl/shared/db/Projekt.sq" beforeDir="false" afterPath="$PROJECT_DIR$/shared/src/commonMain/sqldelight/de/tododl/shared/db/Projekt.sq" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/shared/src/desktopMain/kotlin/de/tododl/shared/remote/HttpClientFactory.desktop.kt" beforeDir="false" afterPath="$PROJECT_DIR$/shared/src/desktopMain/kotlin/de/tododl/shared/remote/HttpClientFactory.desktop.kt" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -38,6 +58,9 @@
       </state>
     </system>
   </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
   <component name="GradleScriptDefinitionsStorage" workingDir="$PROJECT_DIR$" gradleHome="$USER_HOME$/.gradle/wrapper/dists/gradle-8.9-bin/90cnw93cvbtalezasaz0blq0a/gradle-8.9" javaHome="$APPLICATION_HOME_DIR$/jbr/Contents/Home" gradleVersion="8.9">
     <option name="jvmArguments">
       <list>
@@ -56,28 +79,29 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Gradle./Users/janreiner/IdeaProjects/Tododl [:desktopApp:run].executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.Tododl [:desktopApp:run].executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.desktopApp [desktop].executor&quot;: &quot;Run&quot;,
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.cidr.known.project.marker&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.readMode.enableVisualFormatting&quot;: &quot;true&quot;,
-    &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
-    &quot;dart.analysis.tool.window.visible&quot;: &quot;false&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;show.migrate.to.gradle.popup&quot;: &quot;false&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Gradle./Users/janreiner/IdeaProjects/Tododl [:desktopApp:run].executor": "Run",
+    "Gradle.Tododl [:desktopApp:run].executor": "Run",
+    "Gradle.desktopApp [desktop].executor": "Run",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.cidr.known.project.marker": "true",
+    "RunOnceActivity.readMode.enableVisualFormatting": "true",
+    "cidr.known.project.marker": "true",
+    "dart.analysis.tool.window.visible": "false",
+    "git-widget-placeholder": "main",
+    "kotlin-language-version-configured": "true",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "show.migrate.to.gradle.popup": "false",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RunManager" selected="Gradle.desktopApp [desktop]">
     <configuration name="Tododl [:desktopApp:run]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
@@ -169,7 +193,7 @@
       <updated>1785789442222</updated>
       <workItem from="1785789443831" duration="2516000" />
       <workItem from="1785876226357" duration="3655000" />
-      <workItem from="1785961721620" duration="1354000" />
+      <workItem from="1785961721620" duration="2720000" />
     </task>
     <servers />
   </component>

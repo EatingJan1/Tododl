@@ -26,9 +26,11 @@ interface BereichRepository {
  */
 interface ProjektRepository {
     fun observeProjekte(bereichId: String): Flow<List<Projekt>>
+    fun observeArchivedProjekte(bereichId: String): Flow<List<Projekt>>
     suspend fun getProjekt(id: String): Projekt?
     suspend fun upsert(projekt: Projekt)
     suspend fun archive(id: String)
+    suspend fun unarchive(id: String)
     suspend fun delete(id: String)
 }
 

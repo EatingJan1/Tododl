@@ -10,7 +10,7 @@ api = Namespace("groups", description="Gruppen (Team-Verwaltung) auf diesem Serv
 group_model = api.model("GroupRequest", {"name": fields.String(required=True)})
 
 add_member_model = api.model("AddGroupMemberRequest", {
-    "email": fields.String(required=True),
+    "username": fields.String(required=True),
     "role": fields.String(required=False, default="MEMBER"),  # MEMBER | ADMIN
 })
 
@@ -72,9 +72,9 @@ class GroupMembers(Resource):
             api.abort(403, "Nur Gruppen-Admins dürfen Mitglieder hinzufügen")
 
         data = api.payload
-        target_user = User.query.filter_by(email=data["email"]).first()
+        target_user = User.query.filter_by(username=data["username"]).first()
         if not target_user:
-            api.abort(404, "Kein registrierter Nutzer mit dieser E-Mail")
+            api.abort(404, "Kein registrierter Nutzer mit diesem Nutzernamen")
 
         if GroupMembership.query.filter_by(group_id=group_id, user_id=target_user.id).first():
             api.abort(409, "Person ist bereits Mitglied dieser Gruppe")

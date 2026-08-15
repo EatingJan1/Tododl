@@ -20,13 +20,14 @@ class User(db.Model):
     __tablename__ = "user"
 
     id = db.Column(db.String, primary_key=True, default=new_id)
-    email = db.Column(db.String, unique=True, nullable=False, index=True)
+    username = db.Column(db.String, unique=True, nullable=False, index=True)
     name = db.Column(db.String, nullable=False)
     password_hash = db.Column(db.String, nullable=False)
+    is_admin = db.Column(db.Boolean, nullable=False, default=False)
     created_at = db.Column(db.BigInteger, default=now_ms)
 
     def to_dict(self):
-        return {"id": self.id, "email": self.email, "name": self.name}
+        return {"id": self.id, "username": self.username, "name": self.name}
 
 
 class Group(db.Model):
@@ -60,7 +61,7 @@ class GroupMembership(db.Model):
     def to_dict(self):
         return {
             "userId": self.user_id,
-            "email": self.user.email if self.user else None,
+            "username": self.user.username if self.user else None,
             "name": self.user.name if self.user else None,
             "role": self.role,
         }
@@ -112,7 +113,7 @@ class ProjectAccess(db.Model):
         db.UniqueConstraint("project_id", "principal_type", "principal_id", name="uq_project_access"),
     )
 
-    def to_dict(self, resolved_name=None, resolved_email=None):
+    def to_dict(self, resolved_name=None, resolved_username=None):
         return {
             "id": self.id,
             "projectId": self.project_id,
@@ -120,7 +121,7 @@ class ProjectAccess(db.Model):
             "principalId": self.principal_id,
             "role": self.role,
             "name": resolved_name,
-            "email": resolved_email,
+            "username": resolved_username,
         }
 
 

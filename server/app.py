@@ -11,6 +11,7 @@ from nodes import api as nodes_ns
 from todos import api as todos_ns
 from mindcards import api as mindcards_ns
 from groups import api as groups_ns
+from admin import admin_bp
 
 
 def create_app():
@@ -20,6 +21,7 @@ def create_app():
     app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{db_path}"
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     app.config["JWT_SECRET_KEY"] = os.environ.get("TODODL_JWT_SECRET", "dev-secret-change-me")
+    app.config["SECRET_KEY"] = os.environ.get("TODODL_SESSION_SECRET", "dev-session-secret-change-me")
 
     CORS(app)  # für lokale Tests von überall erlaubt; für Produktion einschränken
     db.init_app(app)
@@ -39,6 +41,8 @@ def create_app():
     api.add_namespace(todos_ns, path="/panels")
     api.add_namespace(mindcards_ns, path="/panels")
     api.add_namespace(groups_ns, path="/groups")
+
+    app.register_blueprint(admin_bp)
 
     with app.app_context():
         db.create_all()

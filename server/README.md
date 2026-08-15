@@ -12,24 +12,41 @@ pip install -r requirements.txt
 python app.py
 ```
 
-Läuft dann auf `http://127.0.0.1:5001`. Swagger-UI zum manuellen Testen:
-`http://127.0.0.1:5001/docs`
+Läuft dann auf `http://127.0.0.1:5001`. Beim allerersten Öffnen von
+`http://127.0.0.1:5001/admin` (noch kein Nutzer vorhanden) erscheint
+automatisch eine Einrichtungsseite, auf der du den ersten Admin-Account
+anlegst - kein Terminal-Kommando nötig. Danach normaler Login unter
+`/admin/login`, weitere Nutzer über `/admin/users`.
+
+Swagger-UI zum manuellen Testen der API: `http://127.0.0.1:5001/docs`.
 
 Die SQLite-Datei `tododl_server.db` wird beim ersten Start automatisch im
 `server/`-Ordner angelegt.
 
+## Nutzerverwaltung
+
+Es gibt **keine öffentliche Registrierung** mehr. Der erste Nutzer (Admin)
+wird einmalig über die Einrichtungsseite unter `/admin` angelegt, sobald der
+Server zum ersten Mal läuft und noch keine Nutzer in der Datenbank sind.
+Alle weiteren Nutzer legt dieser Admin über `/admin/users` an (Nutzername,
+Name, Passwort, optional Admin-Rechte).
+
+Alternativ geht das Anlegen des ersten Admins auch weiterhin per Skript
+(z. B. für automatisiertes Deployment): `python create_admin.py <username> <name> <passwort>`.
+Das Skript funktioniert nur, solange noch kein Nutzer existiert - danach ist
+`/admin/setup` gesperrt und nur noch `/admin/users` (mit Login) nutzbar.
+
+Das Login-Feld heißt `username` (nicht E-Mail) - sowohl im API-Login
+(`POST /auth/login`) als auch überall dort, wo eine Person zum
+Einladen/Freigeben angegeben wird (`username` statt `email` im Request-Body).
+
 ## Kurzer manueller Test
 
 ```bash
-# Registrieren
-curl -X POST http://127.0.0.1:5001/auth/register \
-  -H "Content-Type: application/json" \
-  -d '{"email":"jan@example.com","password":"test1234","name":"Jan"}'
-
-# Login (Token aus der Antwort kopieren)
+# Login (Token aus der Antwort kopieren) - Nutzer vorher per create_admin.py oder /admin/users anlegen
 curl -X POST http://127.0.0.1:5001/auth/login \
   -H "Content-Type: application/json" \
-  -d '{"email":"jan@example.com","password":"test1234"}'
+  -d '{"username":"jan","password":"mein-passwort"}'
 
 # Projekt anlegen (TOKEN ersetzen)
 curl -X POST http://127.0.0.1:5001/projects \
@@ -42,8 +59,8 @@ curl -X POST http://127.0.0.1:5001/projects \
 
 | Methode | Pfad | Zweck |
 |---|---|---|
-| POST | `/auth/register` | Registrieren |
 | POST | `/auth/login` | Login, liefert JWT |
+| GET | `/admin/login`, `/admin/users` | Admin-Weboberfläche (Session-basiert, kein JWT) |
 | GET | `/projects` | Eigene Server-Projekte (direkt oder über Gruppe) |
 | POST | `/projects` | Neues Server-Projekt (macht dich zum Owner) |
 | PUT | `/projects/<id>` | Projekt umbenennen etc. (min. EDITOR) |

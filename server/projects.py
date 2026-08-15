@@ -15,7 +15,7 @@ project_model = api.model("ProjectRequest", {
 })
 
 grant_user_model = api.model("GrantUserAccessRequest", {
-    "email": fields.String(required=True),
+    "username": fields.String(required=True),
     "role": fields.String(required=False, default="EDITOR"),  # OWNER | EDITOR | VIEWER
 })
 
@@ -33,7 +33,10 @@ def _require_role(project_id: str, user_id: str, min_role: str):
 def _resolve_access_dict(grant: ProjectAccess) -> dict:
     if grant.principal_type == "USER":
         user = User.query.get(grant.principal_id)
-        return grant.to_dict(resolved_name=user.name if user else None, resolved_email=user.email if user else None)
+        return grant.to_dict(
+            resolved_name=user.name if user else None,
+            resolved_username=user.username if user else None,
+        )
     group = Group.query.get(grant.principal_id)
     return grant.to_dict(resolved_name=group.name if group else None)
 
@@ -141,9 +144,9 @@ class ProjectAccessGrantUser(Resource):
         _require_role(project_id, user_id, "OWNER")
 
         data = api.payload
-        target = User.query.filter_by(email=data["email"]).first()
+        target = User.query.filter_by(username=data["username"]).first()
         if not target:
-            api.abort(404, "Kein registrierter Nutzer mit dieser E-Mail")
+            api.abort(404, "Kein registrierter Nutzer mit diesem Nutzernamen")
 
         role = data.get("role", "EDITOR")
         if role not in ROLE_RANK:

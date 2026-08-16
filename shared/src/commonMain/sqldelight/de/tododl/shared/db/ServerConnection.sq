@@ -1,13 +1,16 @@
 -- Jede Zeile ist eine gespeicherte Verbindung zu genau einem Projektserver
 -- (z. B. "Firma", "Privat", "Verein" - jeweils eigene baseUrl + eigener Login).
+-- Hinweis: "username" (Login-Name) und "displayName" (Klartext-Name) sind
+-- bewusst NICHT "userName" genannt - SQLite behandelt Spaltennamen
+-- case-insensitive, "username" und "userName" wären dieselbe Spalte gewesen!
 CREATE TABLE serverConnection (
     id TEXT NOT NULL PRIMARY KEY,
     name TEXT NOT NULL,
     baseUrl TEXT NOT NULL,
     accessToken TEXT NOT NULL,
     userId TEXT NOT NULL,
-    userEmail TEXT NOT NULL,
-    userName TEXT NOT NULL,
+    username TEXT NOT NULL,
+    displayName TEXT NOT NULL,
     createdAt INTEGER NOT NULL
 );
 
@@ -18,7 +21,7 @@ selectServerConnectionById:
 SELECT * FROM serverConnection WHERE id = ?;
 
 insertServerConnection:
-INSERT OR REPLACE INTO serverConnection(id, name, baseUrl, accessToken, userId, userEmail, userName, createdAt)
+INSERT OR REPLACE INTO serverConnection(id, name, baseUrl, accessToken, userId, username, displayName, createdAt)
 VALUES (?, ?, ?, ?, ?, ?, ?, ?);
 
 deleteServerConnection:

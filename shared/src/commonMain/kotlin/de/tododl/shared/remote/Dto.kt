@@ -3,7 +3,7 @@ package de.tododl.shared.remote
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class UserDto(val id: String, val email: String, val name: String)
+data class UserDto(val id: String, val username: String, val name: String)
 
 @Serializable
 data class AuthResponseDto(val accessToken: String, val user: UserDto)
@@ -22,7 +22,7 @@ data class ProjectDto(
 @Serializable
 data class MemberDto(
     val userId: String,
-    val email: String? = null,
+    val username: String? = null,
     val name: String? = null,
     val role: String
 )
@@ -62,18 +62,14 @@ data class MindCardDto(
 )
 
 // Request-Bodies (schlanker als die vollen DTOs oben)
+// Kein RegisterRequest mehr - Nutzer werden ausschließlich vom Admin über
+// die /admin-Weboberfläche des Servers angelegt, siehe server/admin.py.
 
 @Serializable
-data class RegisterRequest(val email: String, val password: String, val name: String)
-
-@Serializable
-data class LoginRequest(val email: String, val password: String)
+data class LoginRequest(val username: String, val password: String)
 
 @Serializable
 data class CreateProjectRequest(val title: String, val description: String? = null)
-
-@Serializable
-data class InviteRequest(val email: String, val role: String = "EDITOR")
 
 // ---------- Gruppen & Berechtigungen ----------
 
@@ -83,7 +79,7 @@ data class GroupDto(val id: String, val name: String, val createdBy: String)
 @Serializable
 data class GroupMemberDto(
     val userId: String,
-    val email: String? = null,
+    val username: String? = null,
     val name: String? = null,
     val role: String // MEMBER | ADMIN
 )
@@ -96,14 +92,14 @@ data class ProjectAccessDto(
     val principalId: String,
     val role: String, // OWNER | EDITOR | VIEWER
     val name: String? = null,
-    val email: String? = null
+    val username: String? = null
 )
 
 @Serializable
-data class GrantUserAccessRequest(val email: String, val role: String = "EDITOR")
+data class GrantUserAccessRequest(val username: String, val role: String = "EDITOR")
 
 @Serializable
 data class GrantGroupAccessRequest(val groupId: String, val role: String = "EDITOR")
 
 @Serializable
-data class AddGroupMemberRequest(val email: String, val role: String = "MEMBER")
+data class AddGroupMemberRequest(val username: String, val role: String = "MEMBER")

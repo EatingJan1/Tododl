@@ -15,26 +15,23 @@ import io.ktor.http.ContentType
 import io.ktor.http.contentType
 
 /**
- * Dünner Wrapper um den Ktor-HttpClient. Jede Methode (außer register/login,
- * die es ja erst ermöglichen, eine ServerConnection zu erzeugen) bekommt die
+ * Dünner Wrapper um den Ktor-HttpClient. Jede Methode (außer login, das es
+ * erst ermöglicht, eine ServerConnection zu erzeugen) bekommt die
  * Ziel-ServerConnection explizit übergeben - so kann man mit Firmen-, Privat-
  * und Vereins-Server gleichzeitig arbeiten, ohne einen globalen "aktiven
  * Server" pflegen zu müssen.
+ *
+ * Es gibt bewusst kein register() mehr - Nutzer werden ausschließlich vom
+ * Admin über die /admin-Weboberfläche des jeweiligen Servers angelegt.
  */
 class TododlApiClient(private val httpClient: HttpClient) {
 
     // ---------- Auth (baseUrl explizit, da vor dem Login noch keine ServerConnection existiert) ----------
 
-    suspend fun register(baseUrl: String, email: String, password: String, name: String): AuthResponseDto =
-        httpClient.post("${baseUrl.trimEnd('/')}/auth/register") {
-            contentType(ContentType.Application.Json)
-            setBody(RegisterRequest(email, password, name))
-        }.body()
-
-    suspend fun login(baseUrl: String, email: String, password: String): AuthResponseDto =
+    suspend fun login(baseUrl: String, username: String, password: String): AuthResponseDto =
         httpClient.post("${baseUrl.trimEnd('/')}/auth/login") {
             contentType(ContentType.Application.Json)
-            setBody(LoginRequest(email, password))
+            setBody(LoginRequest(username, password))
         }.body()
 
     // ---------- Projects ----------
@@ -54,11 +51,11 @@ class TododlApiClient(private val httpClient: HttpClient) {
     suspend fun listAccess(c: ServerConnection, projectId: String): List<ProjectAccessDto> =
         httpClient.get("${c.baseUrl}/projects/$projectId/access") { auth(c) }.body()
 
-    suspend fun grantUserAccess(c: ServerConnection, projectId: String, email: String, role: String) {
+    suspend fun grantUserAccess(c: ServerConnection, projectId: String, username: String, role: String) {
         httpClient.post("${c.baseUrl}/projects/$projectId/access/user") {
             auth(c)
             contentType(ContentType.Application.Json)
-            setBody(GrantUserAccessRequest(email, role))
+            setBody(GrantUserAccessRequest(username, role))
         }
     }
 
@@ -89,11 +86,11 @@ class TododlApiClient(private val httpClient: HttpClient) {
     suspend fun listGroupMembers(c: ServerConnection, groupId: String): List<GroupMemberDto> =
         httpClient.get("${c.baseUrl}/groups/$groupId/members") { auth(c) }.body()
 
-    suspend fun addGroupMember(c: ServerConnection, groupId: String, email: String, role: String = "MEMBER") {
+    suspend fun addGroupMember(c: ServerConnection, groupId: String, username: String, role: String = "MEMBER") {
         httpClient.post("${c.baseUrl}/groups/$groupId/members") {
             auth(c)
             contentType(ContentType.Application.Json)
-            setBody(AddGroupMemberRequest(email, role))
+            setBody(AddGroupMemberRequest(username, role))
         }
     }
 

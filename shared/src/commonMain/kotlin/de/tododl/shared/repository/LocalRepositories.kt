@@ -277,8 +277,8 @@ class LocalServerConnectionRepository(
             baseUrl = connection.baseUrl,
             accessToken = connection.accessToken,
             userId = connection.userId,
-            userEmail = connection.userEmail,
-            userName = connection.userName,
+            username = connection.username,
+            displayName = connection.displayName,
             createdAt = now()
         )
     }
@@ -289,6 +289,6 @@ class LocalServerConnectionRepository(
 
     private fun de.tododl.shared.db.ServerConnection.toModel() = ServerConnection(
         id = id, name = name, baseUrl = baseUrl, accessToken = accessToken,
-        userId = userId, userEmail = userEmail, userName = userName
+        userId = userId, username = username, displayName = displayName
     )
 }

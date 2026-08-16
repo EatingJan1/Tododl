@@ -23,6 +23,9 @@ CREATE INDEX projekt_bereich_idx ON projekt(bereichId);
 selectProjekteByBereich:
 SELECT * FROM projekt WHERE bereichId = ? AND archived = 0 ORDER BY position ASC;
 
+selectArchivedProjekteByBereich:
+SELECT * FROM projekt WHERE bereichId = ? AND archived = 1 ORDER BY position ASC;
+
 selectProjektById:
 SELECT * FROM projekt WHERE id = ?;
 
@@ -38,7 +41,3 @@ UPDATE projekt SET archived = 1, updatedAt = ? WHERE id = ?;
 
 unarchiveProjekt:
 UPDATE projekt SET archived = 0, updatedAt = ? WHERE id = ?;
-
-selectArchivedProjekteByBereich:
-SELECT * FROM projekt WHERE bereichId = ? AND archived = 1 ORDER BY position ASC;
-

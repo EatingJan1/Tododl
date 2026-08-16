@@ -178,7 +178,7 @@ fun GruppenScreen(connectionId: String) {
                                         verticalAlignment = Alignment.CenterVertically
                                     ) {
                                         Text(
-                                            text = "${member.name ?: member.email} (${member.role})",
+                                            text = "${member.name ?: member.username} (${member.role})",
                                             modifier = Modifier.weight(1f),
                                             style = MaterialTheme.typography.bodySmall.copy(fontSize = 13.sp)
                                         )
@@ -233,12 +233,12 @@ fun GruppenScreen(connectionId: String) {
         MitgliedHinzufuegenDialog(
             groupName = group.name,
             onDismiss = { addMemberTarget = null },
-            onConfirm = { email, role ->
+            onConfirm = { username, role ->
                 scope.launch {
                     val connection = connectionRepo.getConnection(connectionId)
                     if (connection != null) {
                         try {
-                            syncManager.addGroupMember(connection, group.id, email, role)
+                            syncManager.addGroupMember(connection, group.id, username, role)
                             refresh()
                         } catch (e: Exception) {
                             errorText = e.message ?: "Hinzufügen fehlgeschlagen"
@@ -277,9 +277,9 @@ private fun NeueGruppeDialog(onDismiss: () -> Unit, onConfirm: (name: String) ->
 private fun MitgliedHinzufuegenDialog(
     groupName: String,
     onDismiss: () -> Unit,
-    onConfirm: (email: String, role: String) -> Unit
+    onConfirm: (username: String, role: String) -> Unit
 ) {
-    var email by remember { mutableStateOf("") }
+    var username by remember { mutableStateOf("") }
     var role by remember { mutableStateOf("MEMBER") }
 
     AlertDialog(
@@ -288,9 +288,9 @@ private fun MitgliedHinzufuegenDialog(
         text = {
             Column {
                 OutlinedTextField(
-                    value = email,
-                    onValueChange = { email = it },
-                    label = { Text("E-Mail der Person") },
+                    value = username,
+                    onValueChange = { username = it },
+                    label = { Text("Nutzername der Person") },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -305,7 +305,7 @@ private fun MitgliedHinzufuegenDialog(
             }
         },
         confirmButton = {
-            Button(onClick = { if (email.isNotBlank()) onConfirm(email, role) }) { Text("Hinzufügen") }
+            Button(onClick = { if (username.isNotBlank()) onConfirm(username, role) }) { Text("Hinzufügen") }
         },
         dismissButton = { TextButton(onClick = onDismiss) { Text("Abbrechen") } }
     )

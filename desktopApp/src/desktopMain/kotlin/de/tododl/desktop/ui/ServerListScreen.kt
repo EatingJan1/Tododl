@@ -25,6 +25,9 @@ import kotlin.uuid.Uuid
  * "Verein" - jeweils eigener Server, eigener Login) und erlaubt, neue
  * hinzuzufügen oder zu entfernen. Von hier aus geht's auch zur Gruppen-Verwaltung
  * eines Servers.
+ *
+ * Es gibt hier bewusst KEINE Registrierung mehr - Nutzer werden ausschließlich
+ * vom Admin über die /admin-Weboberfläche des jeweiligen Servers angelegt.
  */
 @OptIn(ExperimentalUuidApi::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -67,7 +70,7 @@ fun ServerListScreen(onOpenGruppen: (connectionId: String, connectionName: Strin
                                 Column(Modifier.weight(1f)) {
                                     Text(connection.name, style = MaterialTheme.typography.titleMedium)
                                     Text(
-                                        "${connection.baseUrl} – ${connection.userName}",
+                                        "${connection.baseUrl} – ${connection.displayName} (${connection.username})",
                                         style = MaterialTheme.typography.bodySmall
                                     )
                                 }
@@ -88,14 +91,10 @@ fun ServerListScreen(onOpenGruppen: (connectionId: String, connectionName: Strin
     if (showAddDialog) {
         AddServerDialog(
             onDismiss = { showAddDialog = false },
-            onConfirm = { name, baseUrl, email, password, displayName, isRegister ->
+            onConfirm = { name, baseUrl, username, password ->
                 scope.launch {
                     try {
-                        val auth = if (isRegister) {
-                            api.register(baseUrl, email, password, displayName)
-                        } else {
-                            api.login(baseUrl, email, password)
-                        }
+                        val auth = api.login(baseUrl, username, password)
                         repo.upsert(
                             ServerConnection(
                                 id = Uuid.random().toString(),
@@ -103,8 +102,8 @@ fun ServerListScreen(onOpenGruppen: (connectionId: String, connectionName: Strin
                                 baseUrl = baseUrl.trimEnd('/'),
                                 accessToken = auth.accessToken,
                                 userId = auth.user.id,
-                                userEmail = auth.user.email,
-                                userName = auth.user.name
+                                username = auth.user.username,
+                                displayName = auth.user.name
                             )
                         )
                         errorText = null
@@ -121,21 +120,12 @@ fun ServerListScreen(onOpenGruppen: (connectionId: String, connectionName: Strin
 @Composable
 private fun AddServerDialog(
     onDismiss: () -> Unit,
-    onConfirm: (
-        name: String,
-        baseUrl: String,
-        email: String,
-        password: String,
-        displayName: String,
-        isRegister: Boolean
-    ) -> Unit
+    onConfirm: (name: String, baseUrl: String, username: String, password: String) -> Unit
 ) {
     var name by remember { mutableStateOf("") }
     var baseUrl by remember { mutableStateOf("http://127.0.0.1:5001") }
-    var email by remember { mutableStateOf("") }
+    var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
-    var displayName by remember { mutableStateOf("") }
-    var isRegister by remember { mutableStateOf(false) }
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -156,19 +146,10 @@ private fun AddServerDialog(
                     singleLine = true
                 )
                 Spacer(Modifier.height(8.dp))
-                if (isRegister) {
-                    OutlinedTextField(
-                        value = displayName,
-                        onValueChange = { displayName = it },
-                        label = { Text("Dein Name") },
-                        singleLine = true
-                    )
-                    Spacer(Modifier.height(8.dp))
-                }
                 OutlinedTextField(
-                    value = email,
-                    onValueChange = { email = it },
-                    label = { Text("E-Mail") },
+                    value = username,
+                    onValueChange = { username = it },
+                    label = { Text("Nutzername") },
                     singleLine = true
                 )
                 Spacer(Modifier.height(8.dp))
@@ -180,19 +161,21 @@ private fun AddServerDialog(
                     visualTransformation = androidx.compose.ui.text.input.PasswordVisualTransformation()
                 )
                 Spacer(Modifier.height(8.dp))
-                TextButton(onClick = { isRegister = !isRegister }) {
-                    Text(if (isRegister) "Ich habe schon einen Account" else "Neuen Account auf diesem Server anlegen")
-                }
+                Text(
+                    "Noch keinen Account? Ein Admin muss dich über die /admin-Weboberfläche " +
+                        "dieses Servers anlegen.",
+                    style = MaterialTheme.typography.bodySmall
+                )
             }
         },
         confirmButton = {
             TextButton(
                 onClick = {
-                    if (name.isNotBlank() && baseUrl.isNotBlank() && email.isNotBlank() && password.isNotBlank()) {
-                        onConfirm(name, baseUrl, email, password, displayName, isRegister)
+                    if (name.isNotBlank() && baseUrl.isNotBlank() && username.isNotBlank() && password.isNotBlank()) {
+                        onConfirm(name, baseUrl, username, password)
                     }
                 }
-            ) { Text(if (isRegister) "Registrieren & verbinden" else "Verbinden") }
+            ) { Text("Verbinden") }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) { Text("Abbrechen") }

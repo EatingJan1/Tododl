@@ -324,7 +324,7 @@ private fun FreigebenDialog(
 ) {
     val scope = rememberCoroutineScope()
     var mode by remember { mutableStateOf("PERSON") }
-    var email by remember { mutableStateOf("") }
+    var username by remember { mutableStateOf("") }
     var role by remember { mutableStateOf("EDITOR") }
     var groups by remember { mutableStateOf<List<GroupDto>>(emptyList()) }
     var selectedGroup by remember { mutableStateOf<GroupDto?>(null) }
@@ -351,9 +351,9 @@ private fun FreigebenDialog(
 
                 if (mode == "PERSON") {
                     OutlinedTextField(
-                        value = email,
-                        onValueChange = { email = it },
-                        label = { Text("E-Mail der Person") },
+                        value = username,
+                        onValueChange = { username = it },
+                        label = { Text("Nutzername der Person") },
                         singleLine = true,
                         modifier = Modifier.fillMaxWidth()
                     )
@@ -398,8 +398,8 @@ private fun FreigebenDialog(
             Button(onClick = {
                 scope.launch {
                     try {
-                        if (mode == "PERSON" && email.isNotBlank()) {
-                            syncManager.grantUserAccess(projekt, email, role)
+                        if (mode == "PERSON" && username.isNotBlank()) {
+                            syncManager.grantUserAccess(projekt, username, role)
                         } else if (mode == "GROUP" && selectedGroup != null) {
                             syncManager.grantGroupAccess(projekt, selectedGroup!!.id, role)
                         }

@@ -72,6 +72,6 @@ data class ServerConnection(
     val baseUrl: String,
     val accessToken: String,
     val userId: String,
-    val userEmail: String,
-    val userName: String
+    val username: String,
+    val displayName: String
 )

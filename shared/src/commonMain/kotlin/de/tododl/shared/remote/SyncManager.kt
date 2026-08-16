@@ -59,9 +59,9 @@ class SyncManager(
         return projekt
     }
 
-    suspend fun grantUserAccess(projekt: Projekt, email: String, role: String) {
+    suspend fun grantUserAccess(projekt: Projekt, username: String, role: String) {
         val connection = connectionFor(projekt) ?: error("Kein Server für dieses Projekt hinterlegt")
-        api.grantUserAccess(connection, projekt.id, email, role)
+        api.grantUserAccess(connection, projekt.id, username, role)
     }
 
     suspend fun grantGroupAccess(projekt: Projekt, groupId: String, role: String) {
@@ -89,8 +89,8 @@ class SyncManager(
     suspend fun listGroupMembers(connection: ServerConnection, groupId: String): List<GroupMemberDto> =
         api.listGroupMembers(connection, groupId)
 
-    suspend fun addGroupMember(connection: ServerConnection, groupId: String, email: String, role: String = "MEMBER") {
-        api.addGroupMember(connection, groupId, email, role)
+    suspend fun addGroupMember(connection: ServerConnection, groupId: String, username: String, role: String = "MEMBER") {
+        api.addGroupMember(connection, groupId, username, role)
     }
 
     suspend fun removeGroupMember(connection: ServerConnection, groupId: String, userId: String) {

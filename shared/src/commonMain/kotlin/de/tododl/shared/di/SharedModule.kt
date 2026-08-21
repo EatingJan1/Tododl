@@ -8,11 +8,13 @@ import de.tododl.shared.remote.TododlApiClient
 import de.tododl.shared.repository.BereichRepository
 import de.tododl.shared.repository.LocalBereichRepository
 import de.tododl.shared.repository.LocalMindCardRepository
+import de.tododl.shared.repository.LocalMarkdownPageRepository
 import de.tododl.shared.repository.LocalNodeRepository
 import de.tododl.shared.repository.LocalProjektRepository
 import de.tododl.shared.repository.LocalServerConnectionRepository
 import de.tododl.shared.repository.LocalTodoItemRepository
 import de.tododl.shared.repository.MindCardRepository
+import de.tododl.shared.repository.MarkdownPageRepository
 import de.tododl.shared.repository.NodeRepository
 import de.tododl.shared.repository.ProjektRepository
 import de.tododl.shared.repository.ServerConnectionRepository
@@ -31,10 +33,11 @@ fun sharedModule(driverFactory: DatabaseDriverFactory, httpClientFactory: HttpCl
     single<NodeRepository> { LocalNodeRepository(get()) }
     single<TodoItemRepository> { LocalTodoItemRepository(get()) }
     single<MindCardRepository> { LocalMindCardRepository(get()) }
+    single<MarkdownPageRepository> { LocalMarkdownPageRepository(get()) }
     single<ServerConnectionRepository> { LocalServerConnectionRepository(get()) }
 
     // --- Projektserver / Sharing (mehrere Server gleichzeitig möglich) ---
     single { httpClientFactory.create() }
     single { TododlApiClient(get()) }
-    single { SyncManager(get(), get(), get(), get(), get(), get()) }
+    single { SyncManager(get(), get(), get(), get(), get(), get(), get()) }
 }

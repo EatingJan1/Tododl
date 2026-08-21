@@ -16,6 +16,8 @@ sealed interface Screen {
         val ordnerId: String? = null, // null = Projekt-Root
         val ordnerTitel: String? = null
     ) : Screen
-    data class TodoListPanel(val panelId: String, val panelTitel: String) : Screen
-    data class MindboardPanel(val panelId: String, val panelTitel: String) : Screen
+    // Ein einziger Panel-Screen für ALLE Panel-Typen (auch neue Plugins) - welcher
+    // Inhalt gerendert wird, entscheidet PanelRegistry.find(panelTypeId) anhand
+    // der Node.type-ID. Kein neuer Screen-Fall mehr nötig für neue Panel-Typen.
+    data class Panel(val panelId: String, val panelTitel: String, val panelTypeId: String) : Screen
 }

@@ -1,6 +1,7 @@
 package de.tododl.shared.repository
 
 import de.tododl.shared.model.Bereich
+import de.tododl.shared.model.MarkdownPage
 import de.tododl.shared.model.MindCard
 import de.tododl.shared.model.Node
 import de.tododl.shared.model.Projekt
@@ -58,6 +59,13 @@ interface MindCardRepository {
     suspend fun upsert(card: MindCard)
     suspend fun updatePosition(id: String, x: Float, y: Float)
     suspend fun delete(id: String)
+}
+
+/** Verwaltet den Markdown-Inhalt von PANEL_MARKDOWN-Nodes (1:1 pro Panel). */
+interface MarkdownPageRepository {
+    fun observePage(panelId: String): Flow<MarkdownPage?>
+    suspend fun getPage(panelId: String): MarkdownPage?
+    suspend fun upsert(page: MarkdownPage)
 }
 
 /** Verwaltet die Liste der gespeicherten Server-Verbindungen (Firma/Privat/Verein/...). */

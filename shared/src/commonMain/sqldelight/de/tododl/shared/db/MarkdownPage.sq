@@ -1,0 +1,17 @@
+-- Ein Dokument pro Markdown-Panel (panelId ist Primary Key, kein eigenes id-Feld nötig).
+CREATE TABLE markdownPage (
+    panelId TEXT NOT NULL PRIMARY KEY,
+    content TEXT NOT NULL DEFAULT '',
+    updatedAt INTEGER NOT NULL,
+    FOREIGN KEY (panelId) REFERENCES node(id) ON DELETE CASCADE
+);
+
+selectMarkdownPage:
+SELECT * FROM markdownPage WHERE panelId = ?;
+
+insertMarkdownPage:
+INSERT OR REPLACE INTO markdownPage(panelId, content, updatedAt)
+VALUES (?, ?, ?);
+
+deleteMarkdownPage:
+DELETE FROM markdownPage WHERE panelId = ?;

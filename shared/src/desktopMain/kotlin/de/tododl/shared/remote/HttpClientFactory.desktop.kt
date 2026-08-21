@@ -23,19 +23,32 @@ actual class HttpClientFactory {
             level = LogLevel.INFO
         }
         HttpResponseValidator {
-            handleResponseExceptionWithRequest { cause, _ ->
+            handleResponseExceptionWithRequest { cause, request ->
                 if (cause is ResponseException) {
                     val status = cause.response.status.value
                     val bodyText = runCatching { cause.response.bodyAsText() }.getOrDefault("")
                     val msg = parseJsonErrorMsg(bodyText) ?: cause.message
 
-                    val isExpired = msg?.contains("Token has expired", ignoreCase = true) == true ||
-                            msg?.contains("expired", ignoreCase = true) == true
+                    // Der Login-Request selbst besitzt noch kein Token, das "ablaufen"
+                    // könnte - ein 401 hier bedeutet immer falsche Zugangsdaten bzw.
+                    // einen auf diesem Server nicht angelegten Nutzer, NIE eine
+                    // abgelaufene Sitzung. Beides gleich zu behandeln führte zur
+                    // irreführenden Meldung "Sitzung abgelaufen, bitte neu anmelden"
+                    // direkt beim allerersten (fehlgeschlagenen) Login-Versuch.
+                    val isLoginRequest = request.url.encodedPath.trimEnd('/').endsWith("/auth/login")
 
-                    if (status == 401 || isExpired) {
-                        throw Exception("Sitzung/Token abgelaufen. Bitte unter 'Meine Server' neu anmelden.", cause)
-                    } else {
-                        throw Exception(msg ?: "Unbekannter Fehler", cause)
+                    val isExpired = !isLoginRequest && (
+                        msg?.contains("Token has expired", ignoreCase = true) == true ||
+                            msg?.contains("expired", ignoreCase = true) == true
+                        )
+
+                    when {
+                        isLoginRequest && status == 401 ->
+                            throw Exception(msg ?: "Nutzername oder Passwort falsch. Ist der Nutzer auf diesem Server angelegt?", cause)
+                        !isLoginRequest && (status == 401 || isExpired) ->
+                            throw Exception("Sitzung/Token abgelaufen. Bitte unter 'Meine Server' neu anmelden.", cause)
+                        else ->
+                            throw Exception(msg ?: "Unbekannter Fehler", cause)
                     }
                 }
             }

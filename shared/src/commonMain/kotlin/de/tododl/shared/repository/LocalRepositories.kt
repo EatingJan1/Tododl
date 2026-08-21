@@ -2,11 +2,12 @@ package de.tododl.shared.repository
 
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
+import app.cash.sqldelight.coroutines.mapToOneOrNull
 import de.tododl.shared.db.TododlDatabase
 import de.tododl.shared.model.Bereich
+import de.tododl.shared.model.MarkdownPage
 import de.tododl.shared.model.MindCard
 import de.tododl.shared.model.Node
-import de.tododl.shared.model.NodeType
 import de.tododl.shared.model.Projekt
 import de.tododl.shared.model.ProjectSource
 import de.tododl.shared.model.ServerConnection
@@ -148,7 +149,7 @@ class LocalNodeRepository(
             id = node.id,
             projectId = node.projectId,
             parentId = node.parentId,
-            type = node.type.name,
+            type = node.type,
             title = node.title,
             icon = node.icon,
             position = node.position.toLong(),
@@ -169,7 +170,7 @@ class LocalNodeRepository(
         id = id,
         projectId = projectId,
         parentId = parentId,
-        type = NodeType.valueOf(type),
+        type = type,
         title = title,
         icon = icon,
         position = position.toInt()
@@ -193,6 +194,10 @@ class LocalTodoItemRepository(
             panelId = item.panelId,
             text = item.text,
             done = if (item.done) 1L else 0L,
+            parentId = item.parentId,
+            assigneeUsername = item.assigneeUsername,
+            priority = item.priority.name,
+            terminDate = item.terminDate,
             dueDate = item.dueDate,
             position = item.position.toLong(),
             createdAt = now(),
@@ -209,7 +214,16 @@ class LocalTodoItemRepository(
     }
 
     private fun de.tododl.shared.db.TodoItem.toModel() = TodoItem(
-        id = id, panelId = panelId, text = text, done = done == 1L, dueDate = dueDate, position = position.toInt()
+        id = id,
+        panelId = panelId,
+        text = text,
+        done = done == 1L,
+        parentId = parentId,
+        assigneeUsername = assigneeUsername,
+        priority = runCatching { de.tododl.shared.model.Priority.valueOf(priority) }.getOrDefault(de.tododl.shared.model.Priority.NONE),
+        terminDate = terminDate,
+        dueDate = dueDate,
+        position = position.toInt()
     )
 }
 
@@ -249,6 +263,32 @@ class LocalMindCardRepository(
         id = id, panelId = panelId, text = text, colorHex = colorHex,
         posX = posX.toFloat(), posY = posY.toFloat()
     )
+}
+
+class LocalMarkdownPageRepository(
+    private val db: TododlDatabase,
+    private val ioDispatcher: CoroutineDispatcher = Dispatchers.Default
+) : MarkdownPageRepository {
+
+    override fun observePage(panelId: String): Flow<MarkdownPage?> =
+        db.markdownPageQueries.selectMarkdownPage(panelId)
+            .asFlow()
+            .mapToOneOrNull(ioDispatcher)
+            .map { it?.toModel() }
+
+    override suspend fun getPage(panelId: String): MarkdownPage? = withContext(ioDispatcher) {
+        db.markdownPageQueries.selectMarkdownPage(panelId).executeAsOneOrNull()?.toModel()
+    }
+
+    override suspend fun upsert(page: MarkdownPage) = withContext(ioDispatcher) {
+        db.markdownPageQueries.insertMarkdownPage(
+            panelId = page.panelId,
+            content = page.content,
+            updatedAt = now()
+        )
+    }
+
+    private fun de.tododl.shared.db.MarkdownPage.toModel() = MarkdownPage(panelId = panelId, content = content)
 }
 
 /** Kleiner Helfer, um Flow<List<T>> elementweise zu mappen ohne extra Dependency. */

@@ -45,6 +45,10 @@ data class TodoItemDto(
     val panelId: String? = null,
     val text: String,
     val done: Boolean = false,
+    val parentId: String? = null,
+    val assigneeUsername: String? = null,
+    val priority: String = "NONE",
+    val terminDate: Long? = null,
     val dueDate: Long? = null,
     val position: Int = 0,
     val updatedAt: Long = 0
@@ -58,6 +62,13 @@ data class MindCardDto(
     val colorHex: String? = null,
     val posX: Float = 0f,
     val posY: Float = 0f,
+    val updatedAt: Long = 0
+)
+
+@Serializable
+data class MarkdownPageDto(
+    val panelId: String,
+    val content: String = "",
     val updatedAt: Long = 0
 )
 

@@ -8,15 +8,17 @@ import androidx.compose.animation.shrinkHorizontally
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import de.tododl.desktop.state.koinGet
+import de.tododl.desktop.panels.PanelRegistry
 import de.tododl.desktop.ui.*
 import de.tododl.desktop.ui.components.NotionSidebar
 import de.tododl.desktop.ui.components.NotionTopBar
 import de.tododl.desktop.ui.theme.TododlTheme
 import de.tododl.shared.model.Bereich
-import de.tododl.shared.model.NodeType
+import de.tododl.shared.model.BuiltinNodeTypes
 import de.tododl.shared.model.ProjectSource
 import de.tododl.shared.model.Projekt
 import de.tododl.shared.repository.BereichRepository
@@ -91,11 +93,7 @@ fun TododlApp() {
             current.projektTitel,
             current.ordnerTitel
         )
-        is Screen.TodoListPanel -> listOfNotNull(
-            activeBereich?.title,
-            current.panelTitel
-        )
-        is Screen.MindboardPanel -> listOfNotNull(
+        is Screen.Panel -> listOfNotNull(
             activeBereich?.title,
             current.panelTitel
         )
@@ -161,8 +159,8 @@ fun TododlApp() {
                         onSelectNode = { projectId, node ->
                             val proj = projekte.firstOrNull { it.id == projectId }
                             val projTitel = proj?.title ?: "Projekt"
-                            when (node.type) {
-                                NodeType.ORDNER -> push(
+                            if (node.type == BuiltinNodeTypes.ORDNER) {
+                                push(
                                     Screen.NodeBaum(
                                         projectId = projectId,
                                         projektTitel = projTitel,
@@ -170,8 +168,8 @@ fun TododlApp() {
                                         ordnerTitel = node.title
                                     )
                                 )
-                                NodeType.PANEL_TODOLIST -> push(Screen.TodoListPanel(node.id, node.title))
-                                NodeType.PANEL_MINDBOARD -> push(Screen.MindboardPanel(node.id, node.title))
+                            } else {
+                                push(Screen.Panel(node.id, node.title, node.type))
                             }
                         }
                     )
@@ -214,13 +212,19 @@ fun TododlApp() {
                             onOrdnerClick = { id, titel ->
                                 push(screen.copy(ordnerId = id, ordnerTitel = titel))
                             },
-                            onTodoListPanelClick = { id, titel -> push(Screen.TodoListPanel(id, titel)) },
-                            onMindboardPanelClick = { id, titel -> push(Screen.MindboardPanel(id, titel)) }
+                            onPanelClick = { id, titel, typeId -> push(Screen.Panel(id, titel, typeId)) }
                         )
 
-                        is Screen.TodoListPanel -> TodoListPanelScreen(panelId = screen.panelId)
-
-                        is Screen.MindboardPanel -> MindboardPanelScreen(panelId = screen.panelId)
+                        is Screen.Panel -> {
+                            val plugin = PanelRegistry.find(screen.panelTypeId)
+                            if (plugin != null) {
+                                plugin.Content(panelId = screen.panelId)
+                            } else {
+                                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                                    Text("Unbekannter Panel-Typ: ${screen.panelTypeId}")
+                                }
+                            }
+                        }
                     }
                 }
             }

@@ -10,6 +10,7 @@ import io.ktor.client.request.header
 import io.ktor.client.request.patch
 import io.ktor.client.request.post
 import io.ktor.client.request.put
+import io.ktor.client.request.url
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
@@ -153,6 +154,28 @@ class TododlApiClient(private val httpClient: HttpClient) {
     suspend fun deleteMindCard(c: ServerConnection, panelId: String, cardId: String) {
         httpClient.delete("${c.baseUrl}/panels/$panelId/mind-cards/$cardId") { auth(c) }
     }
+
+    // ---------- MarkdownPage ----------
+    // Server mountet markdown_pages.py unter "/panels/markdown", Resource-Route ist "/<panel_id>"
+    // -> volle URL ist "/panels/markdown/<panelId>" (NICHT "/panels/<panelId>/markdown").
+
+    suspend fun getMarkdownPage(c: ServerConnection, panelId: String): MarkdownPageDto =
+        httpClient.get("${c.baseUrl}/panels/markdown/$panelId") { auth(c) }.body()
+
+    suspend fun upsertMarkdownPage(c: ServerConnection, panelId: String, content: String): MarkdownPageDto =
+        httpClient.put("${c.baseUrl}/panels/markdown/$panelId") {
+            auth(c)
+            contentType(ContentType.Application.Json)
+            setBody(mapOf("content" to content))
+        }.body()
+
+    // ---------- Nutzersuche (für @-Mentions in Markdown-Seiten) ----------
+
+    suspend fun searchUsers(c: ServerConnection, query: String): List<UserDto> =
+        httpClient.get("${c.baseUrl}/users/search") {
+            auth(c)
+            url { parameters.append("q", query) }
+        }.body()
 
     private fun HttpRequestBuilder.auth(c: ServerConnection) {
         header("Authorization", "Bearer ${c.accessToken}")

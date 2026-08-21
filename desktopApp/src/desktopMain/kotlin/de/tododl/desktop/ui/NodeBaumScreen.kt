@@ -16,20 +16,29 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import de.tododl.desktop.panels.PanelPlugin
+import de.tododl.desktop.panels.PanelRegistry
 import de.tododl.desktop.state.koinGet
 import de.tododl.desktop.ui.components.NotionPageHeader
 import de.tododl.desktop.ui.theme.LocalNotionColors
+import de.tododl.shared.model.BuiltinNodeTypes
 import de.tododl.shared.model.Node
-import de.tododl.shared.model.NodeType
 import de.tododl.shared.remote.SyncManager
 import de.tododl.shared.repository.NodeRepository
 import kotlinx.coroutines.launch
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
+/**
+ * Zeigt Ordner + Panels eines Projekts/Ordners. Welche Panel-Typen anlegbar
+ * sind, kommt komplett aus PanelRegistry - ein neuer Panel-Typ taucht hier
+ * automatisch im "Element hinzufügen"-Dialog und in der Node-Liste auf, ohne
+ * dass diese Datei angefasst werden muss.
+ */
 @OptIn(ExperimentalUuidApi::class)
 @Composable
 fun NodeBaumScreen(
@@ -38,8 +47,7 @@ fun NodeBaumScreen(
     ordnerTitel: String?,
     projektTitel: String,
     onOrdnerClick: (id: String, titel: String) -> Unit,
-    onTodoListPanelClick: (id: String, titel: String) -> Unit,
-    onMindboardPanelClick: (id: String, titel: String) -> Unit
+    onPanelClick: (id: String, titel: String, panelTypeId: String) -> Unit
 ) {
     val repo = remember { koinGet<NodeRepository>() }
     val syncManager = remember { koinGet<SyncManager>() }
@@ -85,7 +93,7 @@ fun NodeBaumScreen(
                     )
                     Spacer(Modifier.height(4.dp))
                     Text(
-                        text = "Lege mit \"Element hinzufügen\" einen Unterordner, eine Todoliste oder ein Mindboard an.",
+                        text = "Lege mit \"Element hinzufügen\" einen Unterordner oder ein Panel an.",
                         style = MaterialTheme.typography.bodySmall,
                         color = notionColors.textSecondary
                     )
@@ -101,10 +109,10 @@ fun NodeBaumScreen(
                     NotionNodeCard(
                         node = node,
                         onClick = {
-                            when (node.type) {
-                                NodeType.ORDNER -> onOrdnerClick(node.id, node.title)
-                                NodeType.PANEL_TODOLIST -> onTodoListPanelClick(node.id, node.title)
-                                NodeType.PANEL_MINDBOARD -> onMindboardPanelClick(node.id, node.title)
+                            if (node.type == BuiltinNodeTypes.ORDNER) {
+                                onOrdnerClick(node.id, node.title)
+                            } else {
+                                onPanelClick(node.id, node.title, node.type)
                             }
                         },
                         onDelete = {
@@ -119,13 +127,13 @@ fun NodeBaumScreen(
     if (showDialog) {
         NeuesElementDialog(
             onDismiss = { showDialog = false },
-            onConfirm = { titel, type ->
+            onConfirm = { titel, typeId ->
                 scope.launch {
                     val node = Node(
                         id = Uuid.random().toString(),
                         projectId = projectId,
                         parentId = ordnerId,
-                        type = type,
+                        type = typeId,
                         title = titel,
                         position = nodes.size
                     )
@@ -147,27 +155,12 @@ private fun NotionNodeCard(
     onDelete: () -> Unit
 ) {
     val notionColors = LocalNotionColors.current
+    val plugin = if (node.type != BuiltinNodeTypes.ORDNER) PanelRegistry.find(node.type) else null
 
-    val (icon, badgeBg, badgeText, badgeTitle) = when (node.type) {
-        NodeType.ORDNER -> Quadruple(
-            Icons.Default.Folder,
-            notionColors.badgeFolder,
-            notionColors.textSecondary,
-            "ORDNER"
-        )
-        NodeType.PANEL_TODOLIST -> Quadruple(
-            Icons.Default.Checklist,
-            notionColors.badgeTodoList,
-            MaterialTheme.colorScheme.primary,
-            "TODOLISTE"
-        )
-        NodeType.PANEL_MINDBOARD -> Quadruple(
-            Icons.Default.Lightbulb,
-            notionColors.badgeMindboard,
-            notionColors.badgeMindboard,
-            "MINDBOARD"
-        )
-    }
+    val icon: ImageVector = plugin?.icon ?: Icons.Default.Folder
+    val badgeTitle: String = plugin?.badgeLabel ?: "ORDNER"
+    val badgeBg: Color = if (plugin != null) notionColors.badgeTodoList else notionColors.badgeFolder
+    val badgeText: Color = plugin?.accentColor() ?: notionColors.textSecondary
 
     Surface(
         modifier = Modifier
@@ -238,15 +231,13 @@ private fun NotionNodeCard(
     }
 }
 
-private data class Quadruple<A, B, C, D>(val first: A, val second: B, val third: C, val fourth: D)
-
 @Composable
 private fun NeuesElementDialog(
     onDismiss: () -> Unit,
-    onConfirm: (titel: String, type: NodeType) -> Unit
+    onConfirm: (titel: String, typeId: String) -> Unit
 ) {
     var text by remember { mutableStateOf("") }
-    var selectedType by remember { mutableStateOf(NodeType.ORDNER) }
+    var selectedType by remember { mutableStateOf(BuiltinNodeTypes.ORDNER) }
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -264,9 +255,22 @@ private fun NeuesElementDialog(
                 Text("Element-Typ:", style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.SemiBold)
                 Spacer(Modifier.height(4.dp))
                 Column(Modifier.selectableGroup()) {
-                    TypeOption("Ordner (enthält weitere Unterordner/Panels)", NodeType.ORDNER, selectedType) { selectedType = it }
-                    TypeOption("Todoliste (Panel mit Aufgaben)", NodeType.PANEL_TODOLIST, selectedType) { selectedType = it }
-                    TypeOption("Mindboard (Panel für freie Notizen)", NodeType.PANEL_MINDBOARD, selectedType) { selectedType = it }
+                    TypeOption(
+                        label = "Ordner",
+                        description = "Enthält weitere Unterordner/Panels",
+                        value = BuiltinNodeTypes.ORDNER,
+                        selected = selectedType,
+                        onSelect = { selectedType = it }
+                    )
+                    PanelRegistry.all.forEach { plugin: PanelPlugin ->
+                        TypeOption(
+                            label = plugin.displayName,
+                            description = plugin.description,
+                            value = plugin.id,
+                            selected = selectedType,
+                            onSelect = { selectedType = it }
+                        )
+                    }
                 }
             }
         },
@@ -280,7 +284,7 @@ private fun NeuesElementDialog(
 }
 
 @Composable
-private fun TypeOption(label: String, value: NodeType, selected: NodeType, onSelect: (NodeType) -> Unit) {
+private fun TypeOption(label: String, description: String, value: String, selected: String, onSelect: (String) -> Unit) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
@@ -291,6 +295,9 @@ private fun TypeOption(label: String, value: NodeType, selected: NodeType, onSel
     ) {
         RadioButton(selected = selected == value, onClick = { onSelect(value) })
         Spacer(Modifier.width(4.dp))
-        Text(label, fontSize = 13.sp)
+        Column {
+            Text(label, fontSize = 13.sp, fontWeight = FontWeight.Medium)
+            Text(description, fontSize = 11.sp, color = LocalNotionColors.current.textSecondary)
+        }
     }
 }

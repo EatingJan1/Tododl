@@ -22,10 +22,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import de.tododl.desktop.panels.PanelRegistry
 import de.tododl.desktop.state.koinGet
 import de.tododl.desktop.ui.theme.LocalNotionColors
+import de.tododl.shared.model.BuiltinNodeTypes
 import de.tododl.shared.model.Node
-import de.tododl.shared.model.NodeType
 import de.tododl.shared.model.ProjectSource
 import de.tododl.shared.model.Projekt
 import de.tododl.shared.repository.NodeRepository
@@ -381,16 +382,16 @@ private fun NotionSidebarNodeItem(
     val interactionSource = remember { MutableInteractionSource() }
     val isHovered by interactionSource.collectIsHoveredAsState()
 
-    val icon = when (node.type) {
-        NodeType.ORDNER -> Icons.Default.FolderOpen
-        NodeType.PANEL_TODOLIST -> Icons.Default.Checklist
-        NodeType.PANEL_MINDBOARD -> Icons.Default.Lightbulb
+    val icon = if (node.type == BuiltinNodeTypes.ORDNER) {
+        Icons.Default.FolderOpen
+    } else {
+        PanelRegistry.find(node.type)?.icon ?: Icons.Default.InsertDriveFile
     }
 
-    val iconColor = when (node.type) {
-        NodeType.ORDNER -> notionColors.textSecondary
-        NodeType.PANEL_TODOLIST -> MaterialTheme.colorScheme.primary
-        NodeType.PANEL_MINDBOARD -> notionColors.badgeMindboard
+    val iconColor = if (node.type == BuiltinNodeTypes.ORDNER) {
+        notionColors.textSecondary
+    } else {
+        PanelRegistry.find(node.type)?.accentColor() ?: notionColors.textSecondary
     }
 
     Column {

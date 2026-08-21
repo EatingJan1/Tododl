@@ -75,6 +75,8 @@ curl -X POST http://127.0.0.1:5001/projects \
 | DELETE | `/projects/<id>/nodes/<nodeId>` | Löschen (min. EDITOR) |
 | GET/PUT/DELETE | `/panels/<panelId>/todo-items[/<id>]` | Todo-Einträge |
 | GET/PUT/DELETE | `/panels/<panelId>/mind-cards[/<id>]` | Mindboard-Karten |
+| GET/PUT | `/panels/markdown/<panelId>` | Markdown-Inhalt eines Markdown-Panels (ein Dokument pro Panel) |
+| GET | `/users/search?q=` | Nutzersuche für @-Mentions (min. 0 Zeichen = alle, max. 20 Treffer) |
 | GET | `/groups` | Eigene Gruppen |
 | POST | `/groups` | Neue Gruppe (Ersteller = ADMIN der Gruppe) |
 | DELETE | `/groups/<id>` | Gruppe löschen (nur Gruppen-ADMIN) |

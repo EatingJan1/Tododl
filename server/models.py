@@ -160,6 +160,10 @@ class TodoItem(db.Model):
     panel_id = db.Column(db.String, db.ForeignKey("node.id"), nullable=False, index=True)
     text = db.Column(db.String, nullable=False)
     done = db.Column(db.Boolean, nullable=False, default=False)
+    parent_id = db.Column(db.String, db.ForeignKey("todo_item.id"), nullable=True, index=True)
+    assignee_username = db.Column(db.String, nullable=True)
+    priority = db.Column(db.String, nullable=False, default="NONE")  # NONE|LOW|MEDIUM|HIGH|URGENT
+    termin_date = db.Column(db.BigInteger, nullable=True)
     due_date = db.Column(db.BigInteger, nullable=True)
     position = db.Column(db.Integer, nullable=False, default=0)
     updated_at = db.Column(db.BigInteger, default=now_ms)
@@ -170,6 +174,10 @@ class TodoItem(db.Model):
             "panelId": self.panel_id,
             "text": self.text,
             "done": self.done,
+            "parentId": self.parent_id,
+            "assigneeUsername": self.assignee_username,
+            "priority": self.priority,
+            "terminDate": self.termin_date,
             "dueDate": self.due_date,
             "position": self.position,
             "updatedAt": self.updated_at,
@@ -195,5 +203,21 @@ class MindCard(db.Model):
             "colorHex": self.color_hex,
             "posX": self.pos_x,
             "posY": self.pos_y,
+            "updatedAt": self.updated_at,
+        }
+
+
+class MarkdownPage(db.Model):
+    """Der Inhalt eines Markdown-Panels - ein Dokument pro Panel (panel_id ist PK)."""
+    __tablename__ = "markdown_page"
+
+    panel_id = db.Column(db.String, db.ForeignKey("node.id"), primary_key=True)
+    content = db.Column(db.Text, nullable=False, default="")
+    updated_at = db.Column(db.BigInteger, default=now_ms)
+
+    def to_dict(self):
+        return {
+            "panelId": self.panel_id,
+            "content": self.content,
             "updatedAt": self.updated_at,
         }

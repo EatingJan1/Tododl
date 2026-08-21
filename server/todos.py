@@ -11,6 +11,10 @@ item_model = api.model("TodoItemRequest", {
     "id": fields.String(required=True),
     "text": fields.String(required=True),
     "done": fields.Boolean(required=False, default=False),
+    "parentId": fields.String(required=False),
+    "assigneeUsername": fields.String(required=False),
+    "priority": fields.String(required=False, default="NONE"),
+    "terminDate": fields.Integer(required=False),
     "dueDate": fields.Integer(required=False),
     "position": fields.Integer(required=False, default=0),
 })
@@ -49,6 +53,10 @@ class TodoItemDetail(Resource):
 
         item.text = data["text"]
         item.done = data.get("done", False)
+        item.parent_id = data.get("parentId")
+        item.assignee_username = data.get("assigneeUsername")
+        item.priority = data.get("priority", "NONE")
+        item.termin_date = data.get("terminDate")
         item.due_date = data.get("dueDate")
         item.position = data.get("position", 0)
         item.updated_at = now_ms()

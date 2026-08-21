@@ -11,6 +11,8 @@ from nodes import api as nodes_ns
 from todos import api as todos_ns
 from mindcards import api as mindcards_ns
 from groups import api as groups_ns
+from markdown_pages import api as markdown_ns
+from users import api as users_ns
 from admin import admin_bp
 
 
@@ -41,6 +43,8 @@ def create_app():
     api.add_namespace(todos_ns, path="/panels")
     api.add_namespace(mindcards_ns, path="/panels")
     api.add_namespace(groups_ns, path="/groups")
+    api.add_namespace(markdown_ns, path="/panels/markdown")
+    api.add_namespace(users_ns, path="/users")
 
     app.register_blueprint(admin_bp)
 

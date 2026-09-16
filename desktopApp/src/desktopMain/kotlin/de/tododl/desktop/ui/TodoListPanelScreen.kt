@@ -72,6 +72,8 @@ fun TodoListPanelScreen(panelId: String) {
             badgeLabel = "PANEL"
         )
 
+        GitHubLinkBar(panelId = panelId)
+
         Column(modifier = Modifier.fillMaxSize().padding(horizontal = 24.dp)) {
             // Neue Aufgabe - schnell, nur Text; Details über Klick auf die Zeile
             Surface(

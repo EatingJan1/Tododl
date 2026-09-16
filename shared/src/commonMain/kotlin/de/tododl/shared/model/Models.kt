@@ -99,3 +99,74 @@ data class ServerConnection(
     val username: String,
     val displayName: String
 )
+
+// ============================================================================
+// Connectors & Actions - BASIS. Bewusst als reines Grundgerüst gehalten (siehe
+// desktopApp/.../connectors/ConnectorProvider.kt für die Erweiterungspunkte
+// und README dort für Beispiele wie GitHub-Issue-Sync, Bring-Listen, Google-
+// Drive-Ordner). Es findet hier (noch) keine echte Netzwerk-Kommunikation
+// statt - nur Datenmodell, Speicherung und die Plugin-Registry.
+// ============================================================================
+
+/** Ein verbundener Zugang zu einer externen API (z.B. ein GitHub-Token, ein Bring-Login). */
+data class ConnectorAccount(
+    val id: String,
+    val providerId: String,
+    val label: String,
+    /** Providerspezifisches JSON (Token, E-Mail, ...) - Format siehe ConnectorProvider.credentialFields. */
+    val credentialsJson: String
+)
+
+/**
+ * Verknüpft einen Node (Projekt oder Panel) mit einer externen Ressource eines
+ * ConnectorAccounts, z.B. Node <-> GitHub-Repo, Node <-> Bring-Liste, Node <->
+ * Google-Drive-Ordner.
+ */
+data class ConnectorLink(
+    val id: String,
+    val nodeId: String,
+    val accountId: String,
+    /** z.B. '{"owner":"jan","repo":"tododl"}' - providerspezifisch. */
+    val externalRefJson: String,
+    /** providerspezifische Optionen, z.B. ob Issues automatisch als Todos angelegt werden. */
+    val optionsJson: String = "{}"
+)
+
+/** Status, den eine ActionRule auf einem Todo auslösen kann. */
+enum class ActionResultStatus { TODO, IN_BEARBEITUNG, DONE }
+
+/**
+ * Eine Bedingung->Effekt-Regel: wenn [fieldName] eines eingehenden Ereignisses
+ * (Mail, FTP-Datei, ...) auf [matchTemplate] passt (mit {{todoTitel}} als
+ * Platzhalter für den Titel des jeweiligen Todos), wird der Status des Todos
+ * auf [resultingStatus] gesetzt.
+ *
+ * Beispiel Mail: fieldName="Betreff", matchTemplate="{{todoTitel}} erledigt" -> DONE
+ * Beispiel FTP:  fieldName="Dateiname", matchTemplate="Rechnung_{{todoTitel}}.pdf" -> IN_BEARBEITUNG
+ */
+data class ActionRule(
+    val id: String,
+    val nodeId: String,
+    val providerId: String,
+    val accountId: String?,
+    val fieldName: String,
+    val matchTemplate: String,
+    val resultingStatus: ActionResultStatus,
+    val isEnabled: Boolean = true
+)
+
+/** Merkt sich, welches TodoItem bereits aus einer externen Ressource (z.B. einem GitHub-Issue) erzeugt wurde. */
+data class ConnectorSyncedItem(
+    val id: String,
+    val linkId: String,
+    val externalId: String,
+    val todoItemId: String
+)
+
+/** Zugangsdaten für den GitHub-Connector (siehe GitHubConnectorProvider). */
+@kotlinx.serialization.Serializable
+data class GitHubCredentials(val token: String)
+
+/** Verlinkte Ressource für den GitHub-Connector (siehe GitHubConnectorProvider). */
+@kotlinx.serialization.Serializable
+data class GitHubExternalRef(val owner: String, val repo: String)

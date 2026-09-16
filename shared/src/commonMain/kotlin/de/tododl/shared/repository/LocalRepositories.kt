@@ -4,7 +4,11 @@ import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
 import app.cash.sqldelight.coroutines.mapToOneOrNull
 import de.tododl.shared.db.TododlDatabase
+import de.tododl.shared.model.ActionResultStatus
+import de.tododl.shared.model.ActionRule
 import de.tododl.shared.model.Bereich
+import de.tododl.shared.model.ConnectorAccount
+import de.tododl.shared.model.ConnectorLink
 import de.tododl.shared.model.MarkdownPage
 import de.tododl.shared.model.MindCard
 import de.tododl.shared.model.Node
@@ -331,4 +335,139 @@ class LocalServerConnectionRepository(
         id = id, name = name, baseUrl = baseUrl, accessToken = accessToken,
         userId = userId, username = username, displayName = displayName
     )
+}
+
+class LocalConnectorAccountRepository(
+    private val db: TododlDatabase,
+    private val ioDispatcher: CoroutineDispatcher = Dispatchers.Default
+) : ConnectorAccountRepository {
+
+    override fun observeAccounts(): Flow<List<ConnectorAccount>> =
+        db.connectorsQueries.selectAllConnectorAccounts()
+            .asFlow()
+            .mapToList(ioDispatcher)
+            .mapEach { it.toModel() }
+
+    override suspend fun getAccountsFor(providerId: String): List<ConnectorAccount> = withContext(ioDispatcher) {
+        db.connectorsQueries.selectConnectorAccountsByProvider(providerId).executeAsList().map { it.toModel() }
+    }
+
+    override suspend fun getAccount(id: String): ConnectorAccount? = withContext(ioDispatcher) {
+        db.connectorsQueries.selectConnectorAccountById(id).executeAsOneOrNull()?.toModel()
+    }
+
+    override suspend fun upsert(account: ConnectorAccount) = withContext(ioDispatcher) {
+        db.connectorsQueries.insertConnectorAccount(
+            id = account.id,
+            providerId = account.providerId,
+            label = account.label,
+            credentialsJson = account.credentialsJson,
+            createdAt = now()
+        )
+    }
+
+    override suspend fun delete(id: String) = withContext(ioDispatcher) {
+        db.connectorsQueries.deleteConnectorAccount(id)
+    }
+
+    private fun de.tododl.shared.db.ConnectorAccount.toModel() = ConnectorAccount(
+        id = id, providerId = providerId, label = label, credentialsJson = credentialsJson
+    )
+}
+
+class LocalConnectorLinkRepository(
+    private val db: TododlDatabase,
+    private val ioDispatcher: CoroutineDispatcher = Dispatchers.Default
+) : ConnectorLinkRepository {
+
+    override fun observeLinksForNode(nodeId: String): Flow<List<ConnectorLink>> =
+        db.connectorsQueries.selectConnectorLinksByNode(nodeId)
+            .asFlow()
+            .mapToList(ioDispatcher)
+            .mapEach { it.toModel() }
+
+    override suspend fun getAllLinks(): List<ConnectorLink> = withContext(ioDispatcher) {
+        db.connectorsQueries.selectAllConnectorLinks().executeAsList().map { it.toModel() }
+    }
+
+    override suspend fun upsert(link: ConnectorLink) = withContext(ioDispatcher) {
+        db.connectorsQueries.insertConnectorLink(
+            id = link.id,
+            nodeId = link.nodeId,
+            accountId = link.accountId,
+            externalRefJson = link.externalRefJson,
+            optionsJson = link.optionsJson,
+            createdAt = now()
+        )
+    }
+
+    override suspend fun delete(id: String) = withContext(ioDispatcher) {
+        db.connectorsQueries.deleteConnectorLink(id)
+    }
+
+    private fun de.tododl.shared.db.ConnectorLink.toModel() = ConnectorLink(
+        id = id, nodeId = nodeId, accountId = accountId,
+        externalRefJson = externalRefJson, optionsJson = optionsJson
+    )
+}
+
+class LocalActionRuleRepository(
+    private val db: TododlDatabase,
+    private val ioDispatcher: CoroutineDispatcher = Dispatchers.Default
+) : ActionRuleRepository {
+
+    override fun observeRulesForNode(nodeId: String): Flow<List<ActionRule>> =
+        db.connectorsQueries.selectActionRulesByNode(nodeId)
+            .asFlow()
+            .mapToList(ioDispatcher)
+            .mapEach { it.toModel() }
+
+    override suspend fun getAllEnabledRules(): List<ActionRule> = withContext(ioDispatcher) {
+        db.connectorsQueries.selectAllEnabledActionRules().executeAsList().map { it.toModel() }
+    }
+
+    override suspend fun upsert(rule: ActionRule) = withContext(ioDispatcher) {
+        db.connectorsQueries.insertActionRule(
+            id = rule.id,
+            nodeId = rule.nodeId,
+            providerId = rule.providerId,
+            accountId = rule.accountId,
+            fieldName = rule.fieldName,
+            matchTemplate = rule.matchTemplate,
+            resultingStatus = rule.resultingStatus.name,
+            isEnabled = if (rule.isEnabled) 1L else 0L,
+            createdAt = now()
+        )
+    }
+
+    override suspend fun delete(id: String) = withContext(ioDispatcher) {
+        db.connectorsQueries.deleteActionRule(id)
+    }
+
+    private fun de.tododl.shared.db.ActionRule.toModel() = ActionRule(
+        id = id, nodeId = nodeId, providerId = providerId, accountId = accountId,
+        fieldName = fieldName, matchTemplate = matchTemplate,
+        resultingStatus = ActionResultStatus.valueOf(resultingStatus),
+        isEnabled = isEnabled == 1L
+    )
+}
+
+class LocalConnectorSyncedItemRepository(
+    private val db: TododlDatabase,
+    private val ioDispatcher: CoroutineDispatcher = Dispatchers.Default
+) : ConnectorSyncedItemRepository {
+
+    override suspend fun getSyncedExternalIds(linkId: String): Set<String> = withContext(ioDispatcher) {
+        db.connectorsQueries.selectSyncedItemsByLink(linkId).executeAsList().map { it.externalId }.toSet()
+    }
+
+    override suspend fun markSynced(linkId: String, externalId: String, todoItemId: String) = withContext(ioDispatcher) {
+        db.connectorsQueries.insertSyncedItem(
+            id = "sync_${linkId}_$externalId",
+            linkId = linkId,
+            externalId = externalId,
+            todoItemId = todoItemId,
+            createdAt = now()
+        )
+    }
 }

@@ -2,11 +2,21 @@ package de.tododl.shared.di
 
 import de.tododl.shared.db.DatabaseDriverFactory
 import de.tododl.shared.db.createDatabase
+import de.tododl.shared.remote.GitHubApiClient
+import de.tododl.shared.remote.GitHubDeviceFlowClient
 import de.tododl.shared.remote.HttpClientFactory
 import de.tododl.shared.remote.SyncManager
 import de.tododl.shared.remote.TododlApiClient
+import de.tododl.shared.repository.ActionRuleRepository
 import de.tododl.shared.repository.BereichRepository
+import de.tododl.shared.repository.ConnectorAccountRepository
+import de.tododl.shared.repository.ConnectorLinkRepository
+import de.tododl.shared.repository.ConnectorSyncedItemRepository
+import de.tododl.shared.repository.LocalActionRuleRepository
 import de.tododl.shared.repository.LocalBereichRepository
+import de.tododl.shared.repository.LocalConnectorAccountRepository
+import de.tododl.shared.repository.LocalConnectorLinkRepository
+import de.tododl.shared.repository.LocalConnectorSyncedItemRepository
 import de.tododl.shared.repository.LocalMindCardRepository
 import de.tododl.shared.repository.LocalMarkdownPageRepository
 import de.tododl.shared.repository.LocalNodeRepository
@@ -35,6 +45,14 @@ fun sharedModule(driverFactory: DatabaseDriverFactory, httpClientFactory: HttpCl
     single<MindCardRepository> { LocalMindCardRepository(get()) }
     single<MarkdownPageRepository> { LocalMarkdownPageRepository(get()) }
     single<ServerConnectionRepository> { LocalServerConnectionRepository(get()) }
+
+    // --- Connectors & Actions (Basis, siehe Models.kt / desktopApp/.../connectors) ---
+    single<ConnectorAccountRepository> { LocalConnectorAccountRepository(get()) }
+    single<ConnectorLinkRepository> { LocalConnectorLinkRepository(get()) }
+    single<ActionRuleRepository> { LocalActionRuleRepository(get()) }
+    single<ConnectorSyncedItemRepository> { LocalConnectorSyncedItemRepository(get()) }
+    single { GitHubApiClient(get()) }
+    single { GitHubDeviceFlowClient(get()) }
 
     // --- Projektserver / Sharing (mehrere Server gleichzeitig möglich) ---
     single { httpClientFactory.create() }

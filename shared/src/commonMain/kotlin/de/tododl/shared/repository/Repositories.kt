@@ -1,6 +1,10 @@
 package de.tododl.shared.repository
 
+import de.tododl.shared.model.ActionResultStatus
+import de.tododl.shared.model.ActionRule
 import de.tododl.shared.model.Bereich
+import de.tododl.shared.model.ConnectorAccount
+import de.tododl.shared.model.ConnectorLink
 import de.tododl.shared.model.MarkdownPage
 import de.tododl.shared.model.MindCard
 import de.tododl.shared.model.Node
@@ -74,4 +78,35 @@ interface ServerConnectionRepository {
     suspend fun getConnection(id: String): ServerConnection?
     suspend fun upsert(connection: ServerConnection)
     suspend fun delete(id: String)
+}
+
+/** Verwaltet verbundene externe Konten (GitHub/Bring/Google Drive/...). Reine Speicherung, siehe ConnectorProvider für die Logik. */
+interface ConnectorAccountRepository {
+    fun observeAccounts(): Flow<List<ConnectorAccount>>
+    suspend fun getAccountsFor(providerId: String): List<ConnectorAccount>
+    suspend fun getAccount(id: String): ConnectorAccount?
+    suspend fun upsert(account: ConnectorAccount)
+    suspend fun delete(id: String)
+}
+
+/** Verwaltet die Verknüpfung von Nodes mit externen Ressourcen eines ConnectorAccounts. */
+interface ConnectorLinkRepository {
+    fun observeLinksForNode(nodeId: String): Flow<List<ConnectorLink>>
+    suspend fun getAllLinks(): List<ConnectorLink>
+    suspend fun upsert(link: ConnectorLink)
+    suspend fun delete(id: String)
+}
+
+/** Verwaltet Action-Regeln (Bedingung -> Todo-Status), die Todolisten zugeordnet sind. */
+interface ActionRuleRepository {
+    fun observeRulesForNode(nodeId: String): Flow<List<ActionRule>>
+    suspend fun getAllEnabledRules(): List<ActionRule>
+    suspend fun upsert(rule: ActionRule)
+    suspend fun delete(id: String)
+}
+
+/** Verhindert doppelte Todos bei wiederholtem Connector-Sync (z.B. GitHub-Issues). */
+interface ConnectorSyncedItemRepository {
+    suspend fun getSyncedExternalIds(linkId: String): Set<String>
+    suspend fun markSynced(linkId: String, externalId: String, todoItemId: String)
 }

@@ -29,6 +29,17 @@ actual class HttpClientFactory {
                     val bodyText = runCatching { cause.response.bodyAsText() }.getOrDefault("")
                     val msg = parseJsonErrorMsg(bodyText) ?: cause.message
 
+                    // Externe APIs (z.B. GitHub) haben nichts mit der eigenen
+                    // Tododl-Server-Sitzung zu tun - hier soll immer die
+                    // Original-Fehlermeldung durchgereicht werden, nie die
+                    // "Sitzung abgelaufen"-Logik unten greifen. Aktuell die
+                    // einzige externe API: GitHub - neue externe Hosts hier ergänzen.
+                    val isKnownExternalHost = request.url.host == "api.github.com"
+
+                    if (isKnownExternalHost) {
+                        throw Exception(msg ?: "Fehler bei externer API ($status)", cause)
+                    }
+
                     // Der Login-Request selbst besitzt noch kein Token, das "ablaufen"
                     // könnte - ein 401 hier bedeutet immer falsche Zugangsdaten bzw.
                     // einen auf diesem Server nicht angelegten Nutzer, NIE eine

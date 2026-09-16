@@ -30,14 +30,17 @@ import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalUuidApi::class)
 @Composable
-fun TododlApp() {
+fun TododlApp(
+    isDarkMode: Boolean,
+    onToggleDarkMode: () -> Unit,
+    onOpenSettings: () -> Unit
+) {
     val bereichRepo = remember { koinGet<BereichRepository>() }
     val projektRepo = remember { koinGet<ProjektRepository>() }
     val scope = rememberCoroutineScope()
 
     val bereiche by bereichRepo.observeBereiche().collectAsState(initial = emptyList())
 
-    var isDarkMode by remember { mutableStateOf(true) }
     var isSidebarVisible by remember { mutableStateOf(true) }
     var selectedBereichId by remember { mutableStateOf<String?>(null) }
     var showNewBereichDialog by remember { mutableStateOf(false) }
@@ -119,8 +122,9 @@ fun TododlApp() {
                     isSidebarVisible = isSidebarVisible,
                     onToggleSidebar = { isSidebarVisible = !isSidebarVisible },
                     isDarkMode = isDarkMode,
-                    onToggleDarkMode = { isDarkMode = !isDarkMode },
+                    onToggleDarkMode = onToggleDarkMode,
                     onOpenServerLogin = { push(Screen.ServerLogin) },
+                    onOpenSettings = onOpenSettings,
                     onBack = if (backstack.size > 1) { { pop() } } else null
                 )
             }

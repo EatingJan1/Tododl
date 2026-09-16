@@ -31,6 +31,7 @@ fun NotionTopBar(
     isDarkMode: Boolean,
     onToggleDarkMode: () -> Unit,
     onOpenServerLogin: () -> Unit,
+    onOpenSettings: () -> Unit,
     onBack: (() -> Unit)? = null
 ) {
     val notionColors = LocalNotionColors.current
@@ -197,6 +198,20 @@ fun NotionTopBar(
                 }
 
                 // Top Right Action Buttons
+                IconButton(
+                    onClick = onOpenSettings,
+                    modifier = Modifier.size(32.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Settings,
+                        contentDescription = "Einstellungen (⌘,)",
+                        tint = notionColors.textSecondary,
+                        modifier = Modifier.size(18.dp)
+                    )
+                }
+
+                Spacer(Modifier.width(4.dp))
+
                 IconButton(
                     onClick = onOpenServerLogin,
                     modifier = Modifier.size(32.dp)

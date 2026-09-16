@@ -1,0 +1,112 @@
+-- Basis-Speicher für das Connector/Action-System. Bewusst generisch gehalten:
+-- ein "Connector" ist eine verbundene externe API (GitHub, Bring, Google Drive, ...),
+-- ein "Link" verknüpft einen konkreten Node (Projekt oder Panel) mit einer externen
+-- Ressource dieses Connectors (Repo, Listen-ID, Ordner-ID, ...), eine "ActionRule"
+-- beschreibt eine Bedingung->Effekt-Regel, die den Status eines Todos ändert.
+
+-- Eine verbundene externe API (ein "Account" - z.B. ein GitHub-Zugang, ein Bring-Login).
+CREATE TABLE connectorAccount (
+    id TEXT NOT NULL PRIMARY KEY,
+    providerId TEXT NOT NULL,      -- z.B. "github", "bring", "google_drive"
+    label TEXT NOT NULL,           -- vom Nutzer vergebener Anzeigename, z.B. "Mein GitHub"
+    -- Zugangsdaten als einfaches JSON-Blob (Token, E-Mail, ...) - Format ist
+    -- providerspezifisch, siehe ConnectorProvider.credentialFields.
+    credentialsJson TEXT NOT NULL,
+    createdAt INTEGER NOT NULL
+);
+
+selectAllConnectorAccounts:
+SELECT * FROM connectorAccount ORDER BY createdAt ASC;
+
+selectConnectorAccountsByProvider:
+SELECT * FROM connectorAccount WHERE providerId = ?;
+
+selectConnectorAccountById:
+SELECT * FROM connectorAccount WHERE id = ?;
+
+insertConnectorAccount:
+INSERT OR REPLACE INTO connectorAccount(id, providerId, label, credentialsJson, createdAt)
+VALUES (?, ?, ?, ?, ?);
+
+deleteConnectorAccount:
+DELETE FROM connectorAccount WHERE id = ?;
+
+-- Verknüpft einen Node (Projekt-Ordner oder Panel) mit einer externen Ressource
+-- eines Connector-Accounts, z.B. Node <-> GitHub-Repo, Node <-> Bring-Liste,
+-- Node <-> Google-Drive-Ordner.
+CREATE TABLE connectorLink (
+    id TEXT NOT NULL PRIMARY KEY,
+    nodeId TEXT NOT NULL,
+    accountId TEXT NOT NULL,
+    -- providerspezifische Referenz auf die externe Ressource, z.B.
+    -- '{"owner":"jan","repo":"tododl"}' oder '{"listId":"..."}' oder '{"folderId":"..."}'.
+    externalRefJson TEXT NOT NULL,
+    -- ob GitHub-Issues automatisch als Todos angelegt werden sollen usw. -
+    -- providerspezifische Optionen als JSON, damit die Tabelle generisch bleibt.
+    optionsJson TEXT NOT NULL DEFAULT '{}',
+    createdAt INTEGER NOT NULL,
+    FOREIGN KEY (nodeId) REFERENCES node(id) ON DELETE CASCADE,
+    FOREIGN KEY (accountId) REFERENCES connectorAccount(id) ON DELETE CASCADE
+);
+
+selectConnectorLinksByNode:
+SELECT * FROM connectorLink WHERE nodeId = ?;
+
+selectAllConnectorLinks:
+SELECT * FROM connectorLink;
+
+insertConnectorLink:
+INSERT OR REPLACE INTO connectorLink(id, nodeId, accountId, externalRefJson, optionsJson, createdAt)
+VALUES (?, ?, ?, ?, ?, ?);
+
+deleteConnectorLink:
+DELETE FROM connectorLink WHERE id = ?;
+
+-- Eine Action-Regel: "wenn <Bedingung von einem ActionProvider> zutrifft,
+-- setze das Todo mit passendem Titel/Feld auf <neuer Status>".
+-- Beispiel Mail: fieldName="Betreff", matchValue="{{todoTitel}} erledigt" -> DONE.
+-- Beispiel FTP: fieldName="Dateiname", matchValue="Rechnung_{{todoTitel}}.pdf" -> IN_BEARBEITUNG.
+CREATE TABLE actionRule (
+    id TEXT NOT NULL PRIMARY KEY,
+    nodeId TEXT NOT NULL,          -- Todoliste (Panel-Node), auf die sich die Regel bezieht
+    providerId TEXT NOT NULL,      -- z.B. "mail", "ftp"
+    accountId TEXT,                -- optionaler Bezug auf einen ConnectorAccount (z.B. IMAP-Konto)
+    fieldName TEXT NOT NULL,       -- z.B. "Betreff", "Dateiname" - providerspezifisch, frei benannt
+    matchTemplate TEXT NOT NULL,   -- Vergleichswert, darf {{todoTitel}} als Platzhalter enthalten
+    resultingStatus TEXT NOT NULL, -- Ziel-TodoStatus, z.B. "DONE", "IN_BEARBEITUNG"
+    isEnabled INTEGER NOT NULL DEFAULT 1,
+    createdAt INTEGER NOT NULL,
+    FOREIGN KEY (nodeId) REFERENCES node(id) ON DELETE CASCADE
+);
+
+selectActionRulesByNode:
+SELECT * FROM actionRule WHERE nodeId = ?;
+
+selectAllEnabledActionRules:
+SELECT * FROM actionRule WHERE isEnabled = 1;
+
+insertActionRule:
+INSERT OR REPLACE INTO actionRule(id, nodeId, providerId, accountId, fieldName, matchTemplate, resultingStatus, isEnabled, createdAt)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);
+
+deleteActionRule:
+DELETE FROM actionRule WHERE id = ?;
+
+-- Merkt sich, welches TodoItem bereits aus welcher externen Ressource (z.B.
+-- einem GitHub-Issue) erzeugt wurde, damit ein erneuter Sync keine Duplikate
+-- anlegt. externalId ist providerspezifisch (bei GitHub: die Issue-Nummer als Text).
+CREATE TABLE connectorSyncedItem (
+    id TEXT NOT NULL PRIMARY KEY,
+    linkId TEXT NOT NULL,
+    externalId TEXT NOT NULL,
+    todoItemId TEXT NOT NULL,
+    createdAt INTEGER NOT NULL,
+    FOREIGN KEY (linkId) REFERENCES connectorLink(id) ON DELETE CASCADE
+);
+
+selectSyncedItemsByLink:
+SELECT * FROM connectorSyncedItem WHERE linkId = ?;
+
+insertSyncedItem:
+INSERT OR REPLACE INTO connectorSyncedItem(id, linkId, externalId, todoItemId, createdAt)
+VALUES (?, ?, ?, ?, ?);
